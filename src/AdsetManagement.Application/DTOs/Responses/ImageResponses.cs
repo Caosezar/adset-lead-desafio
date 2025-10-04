@@ -1,16 +1,17 @@
 namespace AdsetManagement.Application.DTOs.Responses;
 
+public class ImageResponse
+{
+    public int Id { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string ContentType { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
+    public DateTime UploadDate { get; set; }
+}
+
 public class ImageUploadResponse
 {
     public int VehicleId { get; set; }
-    public List<string> UploadedImages { get; set; } = new();
-    public int TotalImages { get; set; }
-    public string Message { get; set; } = "Imagens enviadas com sucesso";
-}
-
-public class ImageListResponse
-{
-    public int VehicleId { get; set; }
-    public List<string> Images { get; set; } = new();
-    public int TotalImages { get; set; }
+    public int UploadedCount { get; set; }
+    public List<string> Messages { get; set; } = new();
 }

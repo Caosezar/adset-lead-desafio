@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AdsetManagement.Domain\AdsetManagement.Domain.csproj" />
-    <ProjectReference Include="..\AdsetManagement.Application\AdsetManagement.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +15,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
 </Project>

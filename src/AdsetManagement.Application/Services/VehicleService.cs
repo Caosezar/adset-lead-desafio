@@ -10,10 +10,14 @@ namespace AdsetManagement.Application.Services;
 public class VehicleService : IVehicleService
 {
     private readonly IVehicleRepository _vehicleRepository;
+    private readonly IVehicleImageRepository _vehicleImageRepository;
+    private readonly IVehicleImageService _vehicleImageService;
 
-    public VehicleService(IVehicleRepository vehicleRepository)
+    public VehicleService(IVehicleRepository vehicleRepository, IVehicleImageRepository vehicleImageRepository, IVehicleImageService vehicleImageService)
     {
         _vehicleRepository = vehicleRepository;
+        _vehicleImageRepository = vehicleImageRepository;
+        _vehicleImageService = vehicleImageService;
     }
 
     public async Task<VehicleResponse> CreateVehicleAsync(CreateVehicleRequest request)
@@ -23,10 +27,62 @@ public class VehicleService : IVehicleService
         return VehicleMapper.Map(createdVehicle);
     }
 
+    public async Task<VehicleResponse> CreateVehicleWithImagesAsync(CreateVehicleWithImagesRequest request)
+    {
+        // Primeiro, criar o veículo sem imagens
+        var createRequest = new CreateVehicleRequest
+        {
+            Marca = request.Marca,
+            Modelo = request.Modelo,
+            Ano = request.Ano,
+            Placa = request.Placa,
+            Km = request.Km,
+            Cor = request.Cor,
+            Preco = request.Preco,
+            OtherOptions = request.OtherOptions,
+            PacoteICarros = request.PacoteICarros,
+            PacoteWebMotors = request.PacoteWebMotors,
+            Imagens = new List<string?>() // Inicialmente vazio
+        };
+
+        var vehicle = VehicleMapper.Map(createRequest);
+        var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
+
+        // Se há imagens para fazer upload
+        if (request.Images != null && request.Images.Any())
+        {
+            var imageUploadRequest = new ImageUploadRequest
+            {
+                Images = request.Images
+            };
+
+            // Usar o VehicleImageService para fazer upload das imagens
+            await _vehicleImageService.UploadImagesAsync(createdVehicle.Id, imageUploadRequest);
+            
+            // Buscar o veículo atualizado com as imagens sincronizadas
+            var updatedVehicle = await _vehicleRepository.GetByIdAsync(createdVehicle.Id);
+            return VehicleMapper.Map(updatedVehicle!);
+        }
+
+        return VehicleMapper.Map(createdVehicle);
+    }
+
     public async Task<VehicleResponse?> GetVehicleByIdAsync(int id)
     {
         var vehicle = await _vehicleRepository.GetByIdAsync(id);
-        return vehicle != null ? VehicleMapper.Map(vehicle) : null;
+        if (vehicle == null) return null;
+        
+        await SyncVehicleImagesAsync(vehicle);
+        
+        return VehicleMapper.Map(vehicle);
+    }
+
+    private async Task SyncVehicleImagesAsync(Vehicle vehicle)
+    {
+        var vehicleImages = await _vehicleImageRepository.GetImagesByVehicleIdAsync(vehicle.Id);
+        vehicle.Imagens = vehicleImages.Select(img => img.ImageUrl).ToList<string?>();
+        
+        await _vehicleRepository.UpdateAsync(vehicle);
     }
 
     public async Task<VehicleListResponse> GetVehiclesAsync(VehicleFilterRequest filter)

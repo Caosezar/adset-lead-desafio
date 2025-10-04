@@ -12,7 +12,10 @@ public class Vehicle : BaseEntity
     public int? Km { get; set; }
     public string Cor { get; set; } = string.Empty;
     public decimal Preco { get; set; }
-    public OtherOptions? OtherOptions { get; set; }
+    public OtherOptions? 
+    OtherOptions { get; set; }
     public string? PacoteICarros { get; set; }
     public string? PacoteWebMotors { get; set; }
+    
+    public ICollection<VehicleImage> VehicleImages { get; set; } = new List<VehicleImage>();
 }

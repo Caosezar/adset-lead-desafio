@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using AdsetManagement.Infrastructure.Data;
 using AdsetManagement.Domain.Interfaces;
 using AdsetManagement.Infrastructure.Repositories;
+using AdsetManagement.Infrastructure.Services;
 using AdsetManagement.Application.Interfaces;
 using AdsetManagement.Application.Services;
 
@@ -32,7 +33,26 @@ builder.Services.AddDbContext<VehicleDbContext>(options =>
         }));
 
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
-builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IVehicleImageRepository, VehicleImageRepository>();
+builder.Services.AddScoped<IFileService>(provider =>
+{
+    var environment = provider.GetRequiredService<IWebHostEnvironment>();
+    return new FileService(environment.WebRootPath);
+});
+builder.Services.AddScoped<IVehicleImageService>(provider =>
+{
+    var vehicleImageRepository = provider.GetRequiredService<IVehicleImageRepository>();
+    var vehicleRepository = provider.GetRequiredService<IVehicleRepository>();
+    var fileService = provider.GetRequiredService<IFileService>();
+    return new VehicleImageService(vehicleImageRepository, vehicleRepository, fileService);
+});
+builder.Services.AddScoped<IVehicleService>(provider =>
+{
+    var vehicleRepository = provider.GetRequiredService<IVehicleRepository>();
+    var vehicleImageRepository = provider.GetRequiredService<IVehicleImageRepository>();
+    var vehicleImageService = provider.GetRequiredService<IVehicleImageService>();
+    return new VehicleService(vehicleRepository, vehicleImageRepository, vehicleImageService);
+});
 
 var app = builder.Build();
 

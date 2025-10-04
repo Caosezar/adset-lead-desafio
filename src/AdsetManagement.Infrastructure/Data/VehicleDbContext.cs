@@ -8,6 +8,7 @@ public class VehicleDbContext : DbContext
     public VehicleDbContext(DbContextOptions<VehicleDbContext> options) : base(options) { }
     
     public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<VehicleImage> VehicleImages { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,8 +27,8 @@ public class VehicleDbContext : DbContext
         
         vehicle.Property(v => v.Imagens)
             .HasConversion(
-                images => string.Join(";", images),
-                images => images.Split(";", StringSplitOptions.RemoveEmptyEntries).ToList()
+                images => string.Join(";", images ?? new List<string?>()),
+                images => images.Split(";", StringSplitOptions.RemoveEmptyEntries).Cast<string?>().ToList()
             );
         
         vehicle.OwnsOne(v => v.OtherOptions, options =>
@@ -47,5 +48,18 @@ public class VehicleDbContext : DbContext
         vehicle.Property(v => v.UpdateUserId).HasMaxLength(100);
         
         vehicle.ToTable("Vehicles");
+
+        modelBuilder.Entity<VehicleImage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.ContentType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.ImageUrl).HasMaxLength(500).IsRequired();
+            
+            entity.HasOne(e => e.Vehicle)
+                  .WithMany(v => v.VehicleImages)
+                  .HasForeignKey(e => e.VehicleId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }
