@@ -1,6 +1,7 @@
 using AdsetManagement.Application.DTOs.Requests;
 using AdsetManagement.Application.DTOs.Responses;
 using AdsetManagement.Domain.Entities;
+using AdsetManagement.Domain.ValueObjects;
 
 namespace AdsetManagement.Application.Mappings;
 

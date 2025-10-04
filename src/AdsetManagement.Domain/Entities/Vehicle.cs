@@ -1,3 +1,5 @@
+using AdsetManagement.Domain.ValueObjects;
+
 namespace AdsetManagement.Domain.Entities;
 
 public class Vehicle : BaseEntity
@@ -13,12 +15,4 @@ public class Vehicle : BaseEntity
     public OtherOptions? OtherOptions { get; set; }
     public string? PacoteICarros { get; set; }
     public string? PacoteWebMotors { get; set; }
-}
-
-public class OtherOptions
-{
-    public bool? ArCondicionado { get; set; }
-    public bool? Alarme { get; set; }
-    public bool? Airbag { get; set; }
-    public bool? ABS { get; set; }
 }

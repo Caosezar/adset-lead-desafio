@@ -19,19 +19,19 @@ public class VehicleService : IVehicleService
     public async Task<VehicleResponse> CreateVehicleAsync(CreateVehicleRequest request)
     {
         var vehicle = VehicleMapper.Map(request);
-        var createdVehicle = await _vehicleRepository.Add(vehicle);
+        var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
         return VehicleMapper.Map(createdVehicle);
     }
 
     public async Task<VehicleResponse?> GetVehicleByIdAsync(int id)
     {
-        var vehicle = await _vehicleRepository.GetById(id);
+        var vehicle = await _vehicleRepository.GetByIdAsync(id);
         return vehicle != null ? VehicleMapper.Map(vehicle) : null;
     }
 
     public async Task<VehicleListResponse> GetVehiclesAsync(VehicleFilterRequest filter)
     {
-        var vehicles = await _vehicleRepository.FindByFilters(
+        var vehicles = await _vehicleRepository.FindByFiltersAsync(
             filter.Marca, filter.Modelo, filter.Ano, filter.Cor, 
             filter.PrecoMin, filter.PrecoMax, filter.KmMax);
         
@@ -48,26 +48,26 @@ public class VehicleService : IVehicleService
 
     public async Task<VehicleResponse?> UpdateVehicleAsync(int id, UpdateVehicleRequest request)
     {
-        var vehicle = await _vehicleRepository.GetById(id);
+        var vehicle = await _vehicleRepository.GetByIdAsync(id);
         if (vehicle == null) return null;
 
         VehicleMapper.Map(vehicle, request);
-        var updatedVehicle = await _vehicleRepository.Update(vehicle);
+        var updatedVehicle = await _vehicleRepository.UpdateAsync(vehicle);
         return updatedVehicle != null ? VehicleMapper.Map(updatedVehicle) : null;
     }
 
     public async Task<bool> DeleteVehicleAsync(int id)
     {
-        return await _vehicleRepository.Remove(id);
+        return await _vehicleRepository.RemoveAsync(id);
     }
 
     public async Task<VehicleResponse?> UpdateVehiclePacotesAsync(int id, UpdatePacotesRequest request)
     {
-        var vehicle = await _vehicleRepository.GetById(id);
+        var vehicle = await _vehicleRepository.GetByIdAsync(id);
         if (vehicle == null) return null;
 
         VehicleMapper.Map(vehicle, request);
-        var updatedVehicle = await _vehicleRepository.Update(vehicle);
+        var updatedVehicle = await _vehicleRepository.UpdateAsync(vehicle);
         return updatedVehicle != null ? VehicleMapper.Map(updatedVehicle) : null;
     }
 }

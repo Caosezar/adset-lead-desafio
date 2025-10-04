@@ -14,33 +14,33 @@ public class VehicleRepository : IVehicleRepository
         _context = context;
     }
     
-    public async Task<Vehicle> Add(Vehicle vehicle)
+    public async Task<Vehicle> AddAsync(Vehicle vehicle)
     {
         _context.Vehicles.Add(vehicle);
         await _context.SaveChangesAsync();
         return vehicle;
     }
     
-    public async Task<Vehicle?> GetById(int id)
+    public async Task<Vehicle?> GetByIdAsync(int id)
     {
         return await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == id);
     }
     
-    public async Task<IEnumerable<Vehicle>> GetAll()
+    public async Task<IEnumerable<Vehicle>> GetAllAsync()
     {
         return await _context.Vehicles.ToListAsync();
     }
     
-    public async Task<Vehicle?> Update(Vehicle vehicle)
+    public async Task<Vehicle?> UpdateAsync(Vehicle vehicle)
     {
         _context.Vehicles.Update(vehicle);
         await _context.SaveChangesAsync();
         return vehicle;
     }
     
-    public async Task<bool> Remove(int id)
+    public async Task<bool> RemoveAsync(int id)
     {
-        var vehicle = await GetById(id);
+        var vehicle = await GetByIdAsync(id);
         if (vehicle == null) return false;
         
         _context.Vehicles.Remove(vehicle);
@@ -48,7 +48,7 @@ public class VehicleRepository : IVehicleRepository
         return true;
     }
     
-    public async Task<IEnumerable<Vehicle>> FindByFilters(string? marca, string? modelo, string? ano, string? cor, decimal? precoMin, decimal? precoMax, int? kmMax)
+    public async Task<IEnumerable<Vehicle>> FindByFiltersAsync(string? marca, string? modelo, string? ano, string? cor, decimal? precoMin, decimal? precoMax, int? kmMax)
     {
         var vehicles = _context.Vehicles.AsQueryable();
 
