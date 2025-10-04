@@ -28,6 +28,29 @@ public class VehicleController : ControllerBase
         return CreatedAtAction(nameof(GetVehicleById), new { id = response.Id }, response);
     }
 
+    [HttpPost("with-images")]
+    public async Task<ActionResult<VehicleResponse>> CreateVehicleWithImages([FromForm] CreateVehicleWithImagesRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var response = await _vehicleService.CreateVehicleWithImagesAsync(request);
+            return CreatedAtAction(nameof(GetVehicleById), new { id = response.Id }, response);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Erro interno do servidor", Details = ex.Message });
+        }
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<VehicleResponse>> GetVehicleById(int id)
     {

@@ -6,6 +6,7 @@ namespace AdsetManagement.Application.Interfaces;
 public interface IVehicleService
 {
     Task<VehicleResponse> CreateVehicleAsync(CreateVehicleRequest request);
+    Task<VehicleResponse> CreateVehicleWithImagesAsync(CreateVehicleWithImagesRequest request);
     Task<VehicleResponse?> GetVehicleByIdAsync(int id);
     Task<VehicleListResponse> GetVehiclesAsync(VehicleFilterRequest filter);
     Task<VehicleResponse?> UpdateVehicleAsync(int id, UpdateVehicleRequest request);
