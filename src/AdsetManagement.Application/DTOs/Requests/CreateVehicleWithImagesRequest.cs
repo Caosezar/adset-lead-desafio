@@ -33,7 +33,10 @@ public class CreateVehicleWithImagesRequest
     [Range(0.01, double.MaxValue, ErrorMessage = "Preço deve ser maior que zero")]
     public decimal Preco { get; set; }
 
-    public OtherOptionsRequest? OtherOptions { get; set; }
+    public bool? ArCondicionado { get; set; }
+    public bool? Alarme { get; set; }
+    public bool? Airbag { get; set; }
+    public bool? ABS { get; set; }
 
     [RegularExpression(@"^(Bronze|Diamante|Platinum|Básico)$", ErrorMessage = "Pacote iCarros deve ser: Bronze, Diamante, Platinum ou Básico")]
     public string? PacoteICarros { get; set; }
@@ -41,6 +44,6 @@ public class CreateVehicleWithImagesRequest
     [RegularExpression(@"^(Bronze|Diamante|Platinum|Básico)$", ErrorMessage = "Pacote WebMotors deve ser: Bronze, Diamante, Platinum ou Básico")]
     public string? PacoteWebMotors { get; set; }
 
-    // Propriedade para as imagens
+
     public List<IFormFile>? Images { get; set; } = new();
 }

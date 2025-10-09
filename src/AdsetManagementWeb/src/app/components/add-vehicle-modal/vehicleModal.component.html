@@ -1,0 +1,147 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <form [formGroup]="vehicleForm" (ngSubmit)="onSave()" class="vehicle-form">
+      
+      
+      <div class="modal-header">
+        <h2>{{ isEditMode ? 'Editar Veículo' : 'Registrar Veículo' }}</h2>
+        <button type="button" mat-icon-button class="close-btn" (click)="onCancel()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      
+      <div class="modal-content">
+        
+        
+        <div class="form-section">
+          <h3>Informações Básicas</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Placa *</mat-label>
+              <input matInput formControlName="placa" placeholder="ABC1234">
+              <mat-error *ngIf="hasFieldError('placa')">{{ getFieldError('placa') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Marca *</mat-label>
+              <mat-select formControlName="marca">
+                <mat-option *ngFor="let brand of brandOptions" [value]="brand">
+                  {{ brand }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="hasFieldError('marca')">{{ getFieldError('marca') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Modelo *</mat-label>
+              <input matInput formControlName="modelo">
+              <mat-error *ngIf="hasFieldError('modelo')">{{ getFieldError('modelo') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Ano *</mat-label>
+              <input matInput type="number" formControlName="ano" min="1900" [max]="2025">
+              <mat-error *ngIf="hasFieldError('ano')">{{ getFieldError('ano') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Cor *</mat-label>
+              <mat-select formControlName="cor">
+                <mat-option *ngFor="let color of colorOptions" [value]="color">
+                  {{ color }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="hasFieldError('cor')">{{ getFieldError('cor') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>KM *</mat-label>
+              <input matInput type="number" formControlName="km" min="0">
+              <mat-error *ngIf="hasFieldError('km')">{{ getFieldError('km') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>Preço *</mat-label>
+              <input matInput type="number" formControlName="preco" min="0" step="0.01">
+              <span matPrefix>R$ </span>
+              <mat-error *ngIf="hasFieldError('preco')">{{ getFieldError('preco') }}</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        
+        <div class="form-section">
+          <h3>Opcionais</h3>
+          <div class="features-grid">
+            <div *ngFor="let feature of availableFeatures" class="feature-item">
+              <mat-checkbox [formControlName]="feature.key">
+                {{ feature.label }}
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="form-section">
+          <h3>Imagens</h3>
+          
+          
+          <div class="image-upload-area">
+            <input type="file" #fileInput multiple accept="image/*" (change)="onImageSelect($event)" style="display: none;">
+            <button type="button" mat-raised-button color="primary" (click)="fileInput.click()">
+              <mat-icon>add_photo_alternate</mat-icon>
+              Adicionar Imagens
+            </button>
+            <p class="upload-hint">Selecione múltiplas imagens do veículo</p>
+          </div>
+
+          
+          <div *ngIf="existingImages.length > 0" class="images-section">
+            <h4>Imagens Atuais</h4>
+            <div class="images-grid">
+              <div *ngFor="let imageUrl of existingImages; let i = index" class="image-item">
+                <img [src]="imageUrl" [alt]="'Imagem ' + (i + 1)">
+                <button type="button" mat-icon-button class="remove-image-btn" (click)="removeImage(i, true)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div *ngIf="imagePreviewUrls.length > 0" class="images-section">
+            <h4>Novas Imagens</h4>
+            <div class="images-grid">
+              <div *ngFor="let imageUrl of imagePreviewUrls; let i = index" class="image-item">
+                <img [src]="imageUrl" [alt]="'Nova imagem ' + (i + 1)">
+                <button type="button" mat-icon-button class="remove-image-btn" (click)="removeImage(i, false)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      
+      <div class="modal-footer">
+        <button type="button" mat-stroked-button color="primary" (click)="onCancel()">
+          Cancelar
+        </button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="vehicleForm.invalid || isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="20" class="loading-spinner"></mat-spinner>
+          <span *ngIf="!isLoading">{{ isEditMode ? 'Atualizar' : 'Salvar' }}</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

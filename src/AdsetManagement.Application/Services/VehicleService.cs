@@ -11,13 +11,16 @@ public class VehicleService : IVehicleService
 {
     private readonly IVehicleRepository _vehicleRepository;
     private readonly IVehicleImageRepository _vehicleImageRepository;
-    private readonly IVehicleImageService _vehicleImageService;
+    private readonly IFileService _fileService;
 
-    public VehicleService(IVehicleRepository vehicleRepository, IVehicleImageRepository vehicleImageRepository, IVehicleImageService vehicleImageService)
+    public VehicleService(
+        IVehicleRepository vehicleRepository, 
+        IVehicleImageRepository vehicleImageRepository,
+        IFileService fileService)
     {
         _vehicleRepository = vehicleRepository;
         _vehicleImageRepository = vehicleImageRepository;
-        _vehicleImageService = vehicleImageService;
+        _fileService = fileService;
     }
 
     public async Task<VehicleResponse> CreateVehicleAsync(CreateVehicleRequest request)
@@ -29,7 +32,16 @@ public class VehicleService : IVehicleService
 
     public async Task<VehicleResponse> CreateVehicleWithImagesAsync(CreateVehicleWithImagesRequest request)
     {
-        // Primeiro, criar o veículo sem imagens
+        
+        var otherOptions = new OtherOptionsRequest
+        {
+            ArCondicionado = request.ArCondicionado,
+            Alarme = request.Alarme,
+            Airbag = request.Airbag,
+            ABS = request.ABS
+        };
+
+        
         var createRequest = new CreateVehicleRequest
         {
             Marca = request.Marca,
@@ -39,29 +51,34 @@ public class VehicleService : IVehicleService
             Km = request.Km,
             Cor = request.Cor,
             Preco = request.Preco,
-            OtherOptions = request.OtherOptions,
+            OtherOptions = otherOptions,
             PacoteICarros = request.PacoteICarros,
             PacoteWebMotors = request.PacoteWebMotors,
-            Imagens = new List<string?>() // Inicialmente vazio
+            Imagens = new List<string?>()
         };
 
         var vehicle = VehicleMapper.Map(createRequest);
         var createdVehicle = await _vehicleRepository.AddAsync(vehicle);
 
-        // Se há imagens para fazer upload
-        if (request.Images != null && request.Images.Any())
+        
+        if (request.Images != null && request.Images.Count > 0)
         {
-            var imageUploadRequest = new ImageUploadRequest
+            foreach (var image in request.Images)
             {
-                Images = request.Images
-            };
-
-            // Usar o VehicleImageService para fazer upload das imagens
-            await _vehicleImageService.UploadImagesAsync(createdVehicle.Id, imageUploadRequest);
-            
-            // Buscar o veículo atualizado com as imagens sincronizadas
-            var updatedVehicle = await _vehicleRepository.GetByIdAsync(createdVehicle.Id);
-            return VehicleMapper.Map(updatedVehicle!);
+                if (image.Length > 0)
+                {
+                    using (var stream = image.OpenReadStream())
+                    {
+                        var imageUrl = await _fileService.SaveFileAsync(image.FileName, stream, createdVehicle.Id);
+                        var vehicleImage = new VehicleImage
+                        {
+                            VehicleId = createdVehicle.Id,
+                            ImageUrl = imageUrl
+                        };
+                        await _vehicleImageRepository.AddImageAsync(vehicleImage);
+                    }
+                }
+            }
         }
 
         return VehicleMapper.Map(createdVehicle);

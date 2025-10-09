@@ -12,61 +12,76 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// CORS 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-    {
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+              .AllowAnyHeader());
 });
 
-builder.Services.AddDbContext<VehicleDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions =>
-        {
-            sqlOptions.MigrationsAssembly("AdsetManagement.Infrastructure");
-            sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-            sqlOptions.CommandTimeout(60);
-        }));
+try
+{
+    builder.Services.AddDbContext<VehicleDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Erro ao configurar Entity Framework: {ex.Message}");
+}
 
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleImageRepository, VehicleImageRepository>();
+
 builder.Services.AddScoped<IFileService>(provider =>
 {
-    var environment = provider.GetRequiredService<IWebHostEnvironment>();
-    return new FileService(environment.WebRootPath);
+    try
+    {
+        var environment = provider.GetRequiredService<IWebHostEnvironment>();
+        var webRootPath = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
+        
+        if (!Directory.Exists(webRootPath))
+            Directory.CreateDirectory(webRootPath);
+            
+        return new FileService(webRootPath);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro ao configurar FileService: {ex.Message}");
+        var tempPath = Path.Combine(Path.GetTempPath(), "AdsetManagement", "uploads");
+        if (!Directory.Exists(tempPath))
+            Directory.CreateDirectory(tempPath);
+        return new FileService(tempPath);
+    }
 });
-builder.Services.AddScoped<IVehicleImageService>(provider =>
-{
-    var vehicleImageRepository = provider.GetRequiredService<IVehicleImageRepository>();
-    var vehicleRepository = provider.GetRequiredService<IVehicleRepository>();
-    var fileService = provider.GetRequiredService<IFileService>();
-    return new VehicleImageService(vehicleImageRepository, vehicleRepository, fileService);
-});
-builder.Services.AddScoped<IVehicleService>(provider =>
-{
-    var vehicleRepository = provider.GetRequiredService<IVehicleRepository>();
-    var vehicleImageRepository = provider.GetRequiredService<IVehicleImageRepository>();
-    var vehicleImageService = provider.GetRequiredService<IVehicleImageService>();
-    return new VehicleService(vehicleRepository, vehicleImageRepository, vehicleImageService);
-});
+
+// Application Services
+builder.Services.AddScoped<IVehicleImageService, VehicleImageService>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseCors();
+    app.UseStaticFiles();
+    app.UseRouting();
+    app.UseAuthorization();
+    app.MapControllers();
+
+    Console.WriteLine("Aplicação configurada com sucesso. Iniciando...");
+    app.Run();
 }
-
-app.UseCors();
-app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Console.WriteLine($"Erro na inicialização da aplicação: {ex.Message}");
+    Console.WriteLine($"StackTrace: {ex.StackTrace}");
+    throw;
+}
