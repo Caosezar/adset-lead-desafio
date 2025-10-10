@@ -1,0 +1,97 @@
+@adset_management_HostAddress = http://localhost:5000
+
+### Test Database Connection - Create simple vehicle
+POST {{adset_management_HostAddress}}/api/vehicle
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "ano": "2023",
+  "placa": "ABC-1234",
+  "km": 15000,
+  "cor": "Branco",
+  "preco": 85000.00,
+  "imagens": ["imagem1.jpg", "imagem2.jpg"],
+  "otherOptions": {
+    "arCondicionado": true,
+    "alarme": true,
+    "airbag": true,
+    "abs": true
+  },
+  "pacoteICarros": "Bronze",
+  "pacoteWebMotors": "Platinum"
+}
+
+### Upload images for vehicle ID 1
+POST {{adset_management_HostAddress}}/api/vehicle/1/images
+Content-Type: multipart/form-data; boundary=----formdata-copilot
+
+------formdata-copilot
+Content-Disposition: form-data; name="images"; filename="car1.jpg"
+Content-Type: image/jpeg
+
+< ./car1.jpg
+------formdata-copilot
+Content-Disposition: form-data; name="images"; filename="car2.jpg"
+Content-Type: image/jpeg
+
+< ./car2.jpg
+------formdata-copilot--
+
+### Get vehicle images
+GET {{adset_management_HostAddress}}/api/vehicle/1/images
+
+### Get all vehicles
+GET {{adset_management_HostAddress}}/api/vehicle
+
+### Remove specific image
+DELETE {{adset_management_HostAddress}}/api/vehicle/1/images/filename.jpg
+
+Get vehicle by id
+GET {{adset_management_HostAddress}}/api/vehicle/1
+Accept: application/json
+
+Create vehicle
+POST {{adset_management_HostAddress}}/api/vehicle
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "ano": 2024,
+  "placa": "ABC-1234",
+  "km": 0,
+  "cor": "Branco",
+  "preco": 85000.00,
+  "otherOptions": ["Ar condicionado", "Direção elétrica"],
+  "pacoteICarros": true,
+  "pacoteWebMotors": false
+}
+
+Update vehicle
+PUT {{adset_management_HostAddress}}/api/vehicle/1
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla XEI",
+  "ano": 2024,
+  "placa": "ABC-1234",
+  "km": 1000,
+  "cor": "Branco",
+  "preco": 87000.00,
+  "otherOptions": ["Ar condicionado", "Direção elétrica", "Câmera de ré"]
+}
+
+Update vehicle packages
+PUT {{adset_management_HostAddress}}/api/vehicle/1/pacotes
+Content-Type: application/json
+
+{
+  "pacoteICarros": false,
+  "pacoteWebMotors": true
+}
+
+Delete vehicle
+DELETE {{adset_management_HostAddress}}/api/vehicle/1

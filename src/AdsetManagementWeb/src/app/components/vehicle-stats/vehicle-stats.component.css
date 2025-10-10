@@ -1,0 +1,244 @@
+.stats-section {
+    margin-bottom: 0; 
+    position: relative;
+    z-index: 15; 
+}
+
+.stats-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    background: var(--adset-lighter-gray);
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0; 
+}
+
+.stats-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-number-and-veiculos {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+
+.stat-label {
+    font-size: 0.9rem;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.veiculos-text {
+    color: #000000 !important;
+    text-transform: capitalize;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.total-text {
+    color: #2196F3;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.com-fotos-text {
+    color: #4CAF50;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.sem-fotos-text {
+    color: #FF5722;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+
+.stat-separator {
+    font-size: 5rem;
+    font-weight: lighter;
+    color: #ccc;
+}
+
+.excel-export {
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.excel-logo {
+    height: 40px;
+    width: 40px;
+    border-radius: 20%;
+    object-fit: contain;
+}
+
+.download-icon {
+    font-size: 16px !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50%;
+    background-color: var(--adset-green, #4caf50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.excel-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.car-register {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.car-icon-btn {
+    background-color: white !important;
+    color: var(--adset-blue, #2196F3) !important;
+    border: 2px solid var(--adset-blue, #2196F3) !important;
+    width: 56px !important;
+    height: 56px !important;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.car-icon-btn:hover {
+    background-color: #f0f8ff !important;
+    transform: scale(1.05);
+}
+
+.save-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.save-btn-custom {
+    display: flex;
+    align-items: center;
+    background-color: var(--adset-orange, #ff9800);
+    border: none;
+    border-radius: 25px;
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.save-btn-custom:hover {
+    background-color: #f57c00;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.save-btn-circle {
+    width: 50px;
+    height: 50px;
+    background-color: var(--adset-orange, #ff9800);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: -5px;
+    z-index: 2;
+}
+
+.save-icon {
+    color: white;
+    font-size: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+}
+
+.save-btn-text {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0 20px 0 15px;
+    white-space: nowrap;
+}
+
+.car-icon {
+    font-size: 32px !important;
+    position: relative;
+    z-index: 1;
+    top: -4px;
+    left: -4px;
+}
+
+.plus-icon {
+    font-size: 14px !important;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: var(--adset-blue, #2196F3);
+    color: white;
+    border-radius: 50%;
+    width: 18px !important;
+    height: 18px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+
+.skeleton-text {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    color: transparent;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@media (max-width: 100%) {
+    .stats-container {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .stat-separator {
+        display: none;
+    }
+    
+    .stats-action-buttons {
+        margin-top: 15px;
+    }
+}

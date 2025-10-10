@@ -1,0 +1,60 @@
+<div class="stats-section">
+    <div class="stats-container">
+        <div class="stats-content-wrapper">
+            <div class="stat-item">
+                <div class="stat-number-and-veiculos">
+                    <span *ngIf="!isLoading">{{ vehicleStats.total.toString().padStart(3, '0') }}</span>
+                    <span *ngIf="isLoading" class="skeleton-text">000</span>
+                    <span class="veiculos-text">Veículos</span>
+                </div>
+                <span class="total-text">Total</span>
+            </div>
+            <span class="stat-separator">/</span>
+            <div class="stat-item">
+                <div class="stat-number-and-veiculos">
+                    <span *ngIf="!isLoading">{{ vehicleStats.withPhotos.toString().padStart(3, '0') }}</span>
+                    <span *ngIf="isLoading" class="skeleton-text">000</span>
+                    <span class="veiculos-text">Veículos</span>
+                </div>
+                <span class="com-fotos-text">com fotos</span>
+            </div>
+            <span class="stat-separator">/</span>
+            <div class="stat-item">
+                <div class="stat-number-and-veiculos">
+                    <span *ngIf="!isLoading">{{ vehicleStats.withoutPhotos.toString().padStart(3, '0') }}</span>
+                    <span *ngIf="isLoading" class="skeleton-text">000</span>
+                    <span class="veiculos-text">Veículos</span>
+                </div>
+                <span class="sem-fotos-text">sem fotos</span>
+            </div>
+
+            <span class="stat-separator">|</span>
+            <div class="stat-item">
+                <span class="veiculos-text">Exportar Estoque</span>
+                <div class="stats-action-buttons">
+                    <div class="excel-export" (click)="onExportStock()">
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.I49LsHzuNnBIYFVrXsqa7AHaHW?w=840&h=834&rs=1&pid=ImgDetMain&o=7&rm=3"
+                            alt="Excel" class="excel-logo">
+                        <mat-icon class="download-icon">download</mat-icon>
+                    </div>
+                </div>
+            </div>
+            <span class="stat-separator">|</span>
+            <div class="car-register" (click)="onRegisterVehicle()">
+                <button mat-fab class="car-icon-btn" matTooltip="Cadastrar Veículo" matTooltipPosition="below">
+                    <mat-icon class="car-icon">directions_car</mat-icon>
+                    <mat-icon class="plus-icon">add</mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <div class="save-button-wrapper">
+            <button class="save-btn-custom" matTooltip="Salvar alterações" matTooltipPosition="left">
+                <div class="save-btn-circle">
+                    <mat-icon class="save-icon">save</mat-icon>
+                </div>
+                <span class="save-btn-text">Salvar</span>
+            </button>
+        </div>
+    </div>
+</div>

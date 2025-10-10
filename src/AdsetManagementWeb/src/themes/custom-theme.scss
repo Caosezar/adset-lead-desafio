@@ -1,0 +1,18 @@
+@use '~@angular/material' as mat;
+@import './custom-colors.scss';
+
+@include mat.core();
+
+$AdsetLeadApp-primary: mat.define-palette($custom-primary);
+$AdsetLeadApp-accent: mat.define-palette($custom-accent, A200, A100, A400);
+$AdsetLeadApp-warn: mat.define-palette(mat.$red-palette);
+
+$AdsetLeadApp-theme: mat.define-light-theme((
+  color: (
+    primary: $AdsetLeadApp-primary,
+    accent: $AdsetLeadApp-accent,
+    warn: $AdsetLeadApp-warn,
+  )
+));
+
+@include mat.all-component-themes($AdsetLeadApp-theme);

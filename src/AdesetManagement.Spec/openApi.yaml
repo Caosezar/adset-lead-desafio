@@ -1,0 +1,665 @@
+openapi: 3.0.1
+info:
+  title: AdsetManagement.API
+  version: '1.0'
+paths:
+  /api/Vehicle:
+    post:
+      tags:
+        - Vehicle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVehicleRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CreateVehicleRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateVehicleRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+    get:
+      tags:
+        - Vehicle
+      parameters:
+        - name: Marca
+          in: query
+          schema:
+            type: string
+        - name: Modelo
+          in: query
+          schema:
+            type: string
+        - name: Ano
+          in: query
+          schema:
+            type: string
+        - name: Cor
+          in: query
+          schema:
+            type: string
+        - name: PrecoMin
+          in: query
+          schema:
+            type: number
+            format: double
+        - name: PrecoMax
+          in: query
+          schema:
+            type: number
+            format: double
+        - name: KmMax
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: Page
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: PageSize
+          in: query
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/VehicleListResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleListResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/VehicleListResponse'
+  /api/Vehicle/with-images:
+    post:
+      tags:
+        - Vehicle
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - Ano
+                - Cor
+                - Marca
+                - Modelo
+                - Placa
+                - Preco
+              type: object
+              properties:
+                Marca:
+                  maxLength: 100
+                  minLength: 0
+                  type: string
+                Modelo:
+                  maxLength: 100
+                  minLength: 0
+                  type: string
+                Ano:
+                  maximum: 2025
+                  minimum: 1900
+                  pattern: ^\d{4}$
+                  type: string
+                Placa:
+                  pattern: ^[A-Z]{3}-\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$
+                  type: string
+                Km:
+                  maximum: 2147483647
+                  minimum: 0
+                  type: integer
+                  format: int32
+                Cor:
+                  maxLength: 50
+                  minLength: 0
+                  type: string
+                Preco:
+                  minimum: 0.01
+                  type: number
+                  format: double
+                OtherOptions.ArCondicionado:
+                  type: boolean
+                OtherOptions.Alarme:
+                  type: boolean
+                OtherOptions.Airbag:
+                  type: boolean
+                OtherOptions.ABS:
+                  type: boolean
+                PacoteICarros:
+                  pattern: ^(Bronze|Diamante|Platinum|Básico)$
+                  type: string
+                PacoteWebMotors:
+                  pattern: ^(Bronze|Diamante|Platinum|Básico)$
+                  type: string
+                Images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              Marca:
+                style: form
+              Modelo:
+                style: form
+              Ano:
+                style: form
+              Placa:
+                style: form
+              Km:
+                style: form
+              Cor:
+                style: form
+              Preco:
+                style: form
+              OtherOptions.ArCondicionado:
+                style: form
+              OtherOptions.Alarme:
+                style: form
+              OtherOptions.Airbag:
+                style: form
+              OtherOptions.ABS:
+                style: form
+              PacoteICarros:
+                style: form
+              PacoteWebMotors:
+                style: form
+              Images:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+  /api/Vehicle/{id}:
+    get:
+      tags:
+        - Vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+    put:
+      tags:
+        - Vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVehicleRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVehicleRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateVehicleRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+    delete:
+      tags:
+        - Vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+  /api/Vehicle/{id}/pacotes:
+    put:
+      tags:
+        - Vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePacotesRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePacotesRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdatePacotesRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+  /api/vehicle/{vehicleId}/images:
+    post:
+      tags:
+        - VehicleImage
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              Images:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+    get:
+      tags:
+        - VehicleImage
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageResponse'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageResponse'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageResponse'
+  /api/vehicle/{vehicleId}/images/{imageId}:
+    delete:
+      tags:
+        - VehicleImage
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+components:
+  schemas:
+    CreateVehicleRequest:
+      required:
+        - ano
+        - cor
+        - marca
+        - modelo
+        - placa
+        - preco
+      type: object
+      properties:
+        imagens:
+          type: array
+          items:
+            type: string
+          nullable: true
+        marca:
+          maxLength: 100
+          minLength: 0
+          type: string
+        modelo:
+          maxLength: 100
+          minLength: 0
+          type: string
+        ano:
+          maximum: 2025
+          minimum: 1900
+          minLength: 1
+          pattern: ^\d{4}$
+          type: string
+        placa:
+          minLength: 1
+          pattern: ^[A-Z]{3}-\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$
+          type: string
+        km:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          format: int32
+          nullable: true
+        cor:
+          maxLength: 50
+          minLength: 0
+          type: string
+        preco:
+          minimum: 0.01
+          type: number
+          format: double
+        otherOptions:
+          $ref: '#/components/schemas/OtherOptionsRequest'
+        pacoteICarros:
+          pattern: ^(Bronze|Diamante|Platinum|Básico)$
+          type: string
+          nullable: true
+        pacoteWebMotors:
+          pattern: ^(Bronze|Diamante|Platinum|Básico)$
+          type: string
+          nullable: true
+      additionalProperties: false
+    ImageResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        fileName:
+          type: string
+          nullable: true
+        contentType:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        uploadDate:
+          type: string
+          format: date-time
+      additionalProperties: false
+    ImageUploadResponse:
+      type: object
+      properties:
+        vehicleId:
+          type: integer
+          format: int32
+        uploadedCount:
+          type: integer
+          format: int32
+        messages:
+          type: array
+          items:
+            type: string
+          nullable: true
+      additionalProperties: false
+    OtherOptionsRequest:
+      type: object
+      properties:
+        arCondicionado:
+          type: boolean
+          nullable: true
+        alarme:
+          type: boolean
+          nullable: true
+        airbag:
+          type: boolean
+          nullable: true
+        abs:
+          type: boolean
+          nullable: true
+      additionalProperties: false
+    OtherOptionsResponse:
+      type: object
+      properties:
+        arCondicionado:
+          type: boolean
+          nullable: true
+        alarme:
+          type: boolean
+          nullable: true
+        airbag:
+          type: boolean
+          nullable: true
+        abs:
+          type: boolean
+          nullable: true
+      additionalProperties: false
+    UpdatePacotesRequest:
+      type: object
+      properties:
+        pacoteICarros:
+          pattern: ^(Bronze|Diamante|Platinum|Básico)$
+          type: string
+          nullable: true
+        pacoteWebMotors:
+          pattern: ^(Bronze|Diamante|Platinum|Básico)$
+          type: string
+          nullable: true
+      additionalProperties: false
+    UpdateVehicleRequest:
+      required:
+        - ano
+        - cor
+        - marca
+        - modelo
+        - placa
+        - preco
+      type: object
+      properties:
+        imagens:
+          type: array
+          items:
+            type: string
+          nullable: true
+        marca:
+          maxLength: 100
+          minLength: 0
+          type: string
+        modelo:
+          maxLength: 100
+          minLength: 0
+          type: string
+        ano:
+          maximum: 2025
+          minimum: 1900
+          minLength: 1
+          pattern: ^\d{4}$
+          type: string
+        placa:
+          minLength: 1
+          pattern: ^[A-Z]{3}-\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$
+          type: string
+        km:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          format: int32
+          nullable: true
+        cor:
+          maxLength: 50
+          minLength: 0
+          type: string
+        preco:
+          minimum: 0.01
+          type: number
+          format: double
+        otherOptions:
+          $ref: '#/components/schemas/OtherOptionsRequest'
+        pacoteICarros:
+          pattern: ^(Bronze|Diamante|Platinum|Básico)$
+          type: string
+          nullable: true
+        pacoteWebMotors:
+          pattern: ^(Bronze|Diamante|Platinum|Básico)$
+          type: string
+          nullable: true
+      additionalProperties: false
+    VehicleListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleResponse'
+          nullable: true
+        totalItems:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+      additionalProperties: false
+    VehicleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        imagens:
+          type: array
+          items:
+            type: string
+          nullable: true
+        marca:
+          type: string
+          nullable: true
+        modelo:
+          type: string
+          nullable: true
+        ano:
+          type: string
+          nullable: true
+        placa:
+          type: string
+          nullable: true
+        km:
+          type: integer
+          format: int32
+          nullable: true
+        cor:
+          type: string
+          nullable: true
+        preco:
+          type: number
+          format: double
+        otherOptions:
+          $ref: '#/components/schemas/OtherOptionsResponse'
+        pacoteICarros:
+          type: string
+          nullable: true
+        pacoteWebMotors:
+          type: string
+          nullable: true
+        creationDate:
+          type: string
+          format: date-time
+        updateDate:
+          type: string
+          format: date-time
+          nullable: true
+        createUserId:
+          type: integer
+          format: int32
+          nullable: true
+        updateUserId:
+          type: integer
+          format: int32
+          nullable: true
+      additionalProperties: false
