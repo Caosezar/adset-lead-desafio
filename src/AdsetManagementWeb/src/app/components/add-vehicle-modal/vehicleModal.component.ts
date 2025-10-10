@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CreateVehicleRequest } from '../../api/models/CreateVehicleRequest';
 import { OtherOptionsRequest } from '../../api/models/OtherOptionsRequest';
 import { UpdateVehicleRequest } from '../../api/models/UpdateVehicleRequest';
 import { VehicleResponse } from '../../api/models/VehicleResponse';
@@ -23,7 +24,8 @@ export class VehicleModalComponent implements OnInit {
   isLoading = false;
   selectedImages: File[] = [];
   imagePreviewUrls: string[] = [];
-  existingImages: string[] = [];
+  existingImages: Array<{id: number, url: string}> = []; 
+  removedImageIds: number[] = []; 
 
 
   brandOptions = [
@@ -48,20 +50,22 @@ export class VehicleModalComponent implements OnInit {
 
   availableFeatures = [
     { key: 'arCondicionado', label: 'Ar Condicionado' },
-    { key: 'direcaoHidraulica', label: 'Direção Hidráulica' },
-    { key: 'vidroEletrico', label: 'Vidro Elétrico' },
-    { key: 'travaEletrica', label: 'Trava Elétrica' },
     { key: 'alarme', label: 'Alarme' },
-    { key: 'som', label: 'Som' },
-    { key: 'rodaLigaLeve', label: 'Roda Liga Leve' },
     { key: 'airbag', label: 'Airbag' },
-    { key: 'abs', label: 'ABS' },
-    { key: 'gps', label: 'GPS' },
-    { key: 'camera', label: 'Câmera de Ré' },
-    { key: 'bluetooth', label: 'Bluetooth' },
-    { key: 'usb', label: 'USB' },
-    { key: 'bancoCouro', label: 'Banco de Couro' },
-    { key: 'tetoSolar', label: 'Teto Solar' }
+    { key: 'abs', label: 'ABS' }
+  ];
+
+  
+  iCarrosPlans = [
+    { value: '', label: 'Nenhum' },
+    { value: 'Bronze', label: 'Bronze' },
+    { value: 'Diamante', label: 'Diamante' },
+    { value: 'Platinum', label: 'Platinum' }
+  ];
+
+  webMotorsPlans = [
+    { value: '', label: 'Nenhum' },
+    { value: 'Básico', label: 'Básico' }
   ];
 
   constructor(
@@ -82,7 +86,7 @@ export class VehicleModalComponent implements OnInit {
 
   private initializeForm(): void {
     this.vehicleForm = this.fb.group({
-      placa: ['', [Validators.required, Validators.pattern(/^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/)]],
+      placa: ['', [Validators.required, Validators.pattern(/^[A-Z]{3}-?\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/)]],
       marca: ['', Validators.required],
       modelo: ['', Validators.required],
       ano: ['', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
@@ -90,21 +94,15 @@ export class VehicleModalComponent implements OnInit {
       km: ['', [Validators.required, Validators.min(0)]],
       preco: ['', [Validators.required, Validators.min(0)]],
 
+      
       arCondicionado: [false],
-      direcaoHidraulica: [false],
-      vidroEletrico: [false],
-      travaEletrica: [false],
       alarme: [false],
-      som: [false],
-      rodaLigaLeve: [false],
       airbag: [false],
       abs: [false],
-      gps: [false],
-      camera: [false],
-      bluetooth: [false],
-      usb: [false],
-      bancoCouro: [false],
-      tetoSolar: [false]
+
+      
+      pacoteICarros: [''],
+      pacoteWebMotors: ['']
     });
   }
 
@@ -118,10 +116,12 @@ export class VehicleModalComponent implements OnInit {
       ano: this.vehicle.ano,
       cor: this.vehicle.cor,
       km: this.vehicle.km,
-      preco: this.vehicle.preco
+      preco: this.vehicle.preco,
+      pacoteICarros: this.vehicle.pacoteICarros || '',
+      pacoteWebMotors: this.vehicle.pacoteWebMotors || ''
     });
 
-
+    
     if (this.vehicle.otherOptions) {
       this.availableFeatures.forEach(feature => {
         const value = (this.vehicle!.otherOptions as any)?.[feature.key] || false;
@@ -130,10 +130,26 @@ export class VehicleModalComponent implements OnInit {
     }
   }
 
-  private loadExistingImages(): void {
-    if (!this.vehicle?.imagens) return;
+  private async loadExistingImages(): Promise<void> {
+    if (!this.vehicle?.id) {
+      this.existingImages = [];
+      return;
+    }
 
-    this.existingImages = this.vehicle.imagens;
+    try {
+      
+      const images = await this.vehicleImageService.getApiVehicleImages(this.vehicle.id).toPromise();
+      
+      this.existingImages = (images || []).map(img => ({
+        id: img.id || 0,
+        url: img.imageUrl || ''
+      }));
+      
+      console.log('[loadExistingImages] Loaded images with IDs:', this.existingImages);
+    } catch (error) {
+      console.error('[loadExistingImages] Error loading images:', error);
+      this.existingImages = [];
+    }
   }
 
   onImageSelect(event: any): void {
@@ -153,12 +169,42 @@ export class VehicleModalComponent implements OnInit {
     }
   }
 
-  removeImage(index: number, isExisting: boolean = false): void {
+  async removeImage(index: number, isExisting: boolean = false): Promise<void> {
     if (isExisting) {
+      
+      const image = this.existingImages[index];
+      console.log(`[removeImage] Removing existing image at index ${index}:`, image);
+      
+      
+      this.removedImageIds.push(image.id);
       this.existingImages.splice(index, 1);
+      
+      
+      if (this.isEditMode && this.vehicle?.id) {
+        await this.deleteImageFromServer(image.id);
+      }
     } else {
+      
+      console.log(`[removeImage] Removing new image at index ${index}`);
       this.selectedImages.splice(index, 1);
       this.imagePreviewUrls.splice(index, 1);
+    }
+  }
+
+  
+  private async deleteImageFromServer(imageId: number): Promise<void> {
+    try {
+      if (!this.vehicle?.id) return;
+
+      console.log(`[deleteImageFromServer] Deleting image ID ${imageId} from vehicle ${this.vehicle.id}`);
+      
+      
+      await this.vehicleImageService.deleteApiVehicleImages(this.vehicle.id, imageId).toPromise();
+      
+      console.log(`[deleteImageFromServer] Image deleted successfully`);
+    } catch (error) {
+      console.error('[deleteImageFromServer] Error deleting image:', error);
+      alert('Erro ao remover imagem. Por favor, tente novamente.');
     }
   }
 
@@ -174,72 +220,68 @@ export class VehicleModalComponent implements OnInit {
       const formValue = this.vehicleForm.value;
       let savedVehicle: VehicleResponse;
 
+      
+      const otherOptions: OtherOptionsRequest = {};
+      this.availableFeatures.forEach(feature => {
+        (otherOptions as any)[feature.key] = formValue[feature.key] || false;
+      });
+
       if (this.isEditMode && this.vehicle) {
-
-        const otherOptions: OtherOptionsRequest = {};
-        this.availableFeatures.forEach(feature => {
-          (otherOptions as any)[feature.key] = formValue[feature.key] || false;
-        });
-
+        
         const updateRequest: UpdateVehicleRequest = {
           placa: formValue.placa,
           marca: formValue.marca,
           modelo: formValue.modelo,
-          ano: formValue.ano,
+          ano: formValue.ano?.toString() || '',
           cor: formValue.cor,
           km: formValue.km,
-          preco: formValue.preco,
-          otherOptions: otherOptions
+          preco: parseFloat(formValue.preco) || 0,
+          otherOptions: otherOptions,
+          pacoteICarros: formValue.pacoteICarros || null,
+          pacoteWebMotors: formValue.pacoteWebMotors || null
         };
 
         console.log('Updating vehicle:', updateRequest);
         savedVehicle = await this.vehicleService.putApiVehicle(this.vehicle.id!, updateRequest).toPromise();
 
-
+        
         if (this.selectedImages.length > 0 && savedVehicle.id) {
           console.log('Uploading images for vehicle:', savedVehicle.id);
           await this.uploadImages(savedVehicle.id);
         }
       } else {
         
-        const formData = new FormData();
-        
-        
-        formData.append('Marca', formValue.marca || '');
-        formData.append('Modelo', formValue.modelo || '');
-        formData.append('Ano', (formValue.ano || '').toString());
-        formData.append('Placa', formValue.placa || '');
-        formData.append('Cor', formValue.cor || '');
-        formData.append('Preco', (parseFloat(formValue.preco) || 0).toString());
-        
-        
-        formData.append('Km', (formValue.km || '').toString());
-        
-        
-        formData.append('ArCondicionado', formValue.arCondicionado ? 'true' : '');
-        formData.append('Alarme', formValue.alarme ? 'true' : '');
-        formData.append('Airbag', formValue.airbag ? 'true' : '');
-        formData.append('ABS', formValue.abs ? 'true' : '');
-        
-        
-        formData.append('PacoteICarros', formValue.pacoteICarros || '');
-        formData.append('PacoteWebMotors', formValue.pacoteWebMotors || '');
+        const createRequest: CreateVehicleRequest = {
+          placa: formValue.placa,
+          marca: formValue.marca,
+          modelo: formValue.modelo,
+          ano: formValue.ano?.toString() || '',
+          cor: formValue.cor,
+          km: formValue.km,
+          preco: parseFloat(formValue.preco) || 0,
+          otherOptions: otherOptions,
+          pacoteICarros: formValue.pacoteICarros || null,
+          pacoteWebMotors: formValue.pacoteWebMotors || null
+        };
 
+        console.log('Creating vehicle:', createRequest);
+        savedVehicle = await this.vehicleService.postApiVehicle(createRequest).toPromise();
         
-        if (this.selectedImages.length > 0) {
-          this.selectedImages.forEach((image) => {
-            formData.append('Images', image, image.name);
-          });
+        
+        if (this.selectedImages.length > 0 && savedVehicle.id) {
+          console.log(`Uploading ${this.selectedImages.length} images for vehicle ${savedVehicle.id}`);
+          await this.uploadImages(savedVehicle.id);
+          
+          
+          const updatedVehicle = await this.vehicleService.getApiVehicle1(savedVehicle.id).toPromise();
+          savedVehicle = updatedVehicle;
         }
-        
-        
-        savedVehicle = await this.http.post<VehicleResponse>('http://localhost:5000/api/Vehicle/with-images', formData).toPromise();
       }
 
       console.log('Vehicle saved successfully:', savedVehicle);
       this.save.emit(savedVehicle);
       
-      // Emitir evento para refresh da lista após criação/edição
+      
       this.refreshList.emit();
 
     } catch (error: any) {
@@ -254,15 +296,32 @@ export class VehicleModalComponent implements OnInit {
 
   private async uploadImages(vehicleId: number): Promise<void> {
     try {
-      for (const image of this.selectedImages) {
-        const formData = {
-          Images: [image]
-        };
+      console.log(`[uploadImages] Starting upload for vehicle ${vehicleId}`);
+      console.log(`[uploadImages] Number of selected images: ${this.selectedImages.length}`);
+      
+      
+      this.selectedImages.forEach((img, index) => {
+        console.log(`[uploadImages] Image ${index}: ${img.name}, Size: ${img.size}, Type: ${img.type}`);
+      });
+      
+      
+      const formData = new FormData();
+      this.selectedImages.forEach((image) => {
+        formData.append('Images', image, image.name);
+      });
 
-        await this.vehicleImageService.postApiVehicleImages(vehicleId, formData).toPromise();
-      }
+      console.log('[uploadImages] FormData created with', this.selectedImages.length, 'images');
+      
+      
+      const result = await this.http.post<any>(
+        `http://localhost:5000/api/vehicle/${vehicleId}/images`,
+        formData
+      ).toPromise();
+      
+      console.log('[uploadImages] Upload response:', result);
     } catch (error) {
-      console.error('Error uploading images:', error);
+      console.error('[uploadImages] Error uploading images:', error);
+      throw error;
     }
   }
 

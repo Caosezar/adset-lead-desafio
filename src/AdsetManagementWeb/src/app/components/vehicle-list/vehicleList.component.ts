@@ -55,7 +55,7 @@ export class VehicleListComponent implements OnInit {
   selectedVehicleForDrawer: VehicleResponse | undefined;
 
   brands = ['Todos', 'Volkswagen', 'Ford', 'Chevrolet', 'Toyota', 'Honda'];
-  priceOptions = ['Todos', '0 - 50,000', '50,000 - 100,000', '100,000+'];
+  priceOptions = ['Todos', '10mil a 50mil', '50mil a 90mil', '+90mil'];
   photoOptions = ['Todos', 'Com fotos', 'Sem fotos'];
   featuresOptions = [
     'Todos',
@@ -64,7 +64,7 @@ export class VehicleListComponent implements OnInit {
     'Airbag',
     'Freio ABS'
   ];
-  colorOptions = ['Todos', 'Branco', 'Preto', 'Prata', 'Azul', 'Vermelho'];
+  colorOptions: string[] = ['Todos'];
 
   constructor(
     private fb: FormBuilder,
@@ -86,6 +86,37 @@ export class VehicleListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadVehicles();
+    this.loadDistinctColors();
+  }
+
+  loadDistinctColors(): void {
+    this.vehicleService.getApiVehicle(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      1,
+      100
+    ).subscribe({
+      next: (response: VehicleListResponse) => {
+        const allVehicles = response.data || [];
+
+        const distinctColors: string[] = [...new Set(
+          allVehicles
+            .map(v => v.cor)
+            .filter((cor): cor is string => !!cor && cor.trim() !== '')
+        )].sort();
+
+        this.colorOptions = ['Todos', ...distinctColors];
+        console.log('Cores distintas carregadas:', distinctColors);
+      },
+      error: (error: any) => {
+        console.error('Erro ao carregar cores distintas:', error);
+      }
+    });
   }
 
   loadVehicles(): void {
@@ -152,6 +183,7 @@ export class VehicleListComponent implements OnInit {
           (!filters.color || filters.color === 'Todos' || (vehicle.cor || '').toLowerCase() === filters.color.toLowerCase()) &&
           (!filters.yearMin || !vehicle.ano || vehicle.ano >= filters.yearMin) &&
           (!filters.yearMax || !vehicle.ano || vehicle.ano <= filters.yearMax) &&
+          this.filterByPrice(vehicle, filters.price) &&
           this.filterByPhotos(vehicle, filters.photos) &&
           this.filterByFeatures(vehicle, filters.features)
         );
@@ -160,6 +192,23 @@ export class VehicleListComponent implements OnInit {
       this.isLoading = false;
       console.log('Filtros aplicados:', this.filteredVehicles.length, 'veículos encontrados');
     }, 500);
+  }
+
+  filterByPrice(vehicle: VehicleResponse, priceFilter: string): boolean {
+    if (!priceFilter || priceFilter === 'Todos') return true;
+
+    const price = vehicle.preco || 0;
+
+    switch (priceFilter) {
+      case '10mil a 50mil':
+        return price >= 10000 && price <= 50000;
+      case '50mil a 90mil':
+        return price > 50000 && price <= 90000;
+      case '+90mil':
+        return price > 90000;
+      default:
+        return true;
+    }
   }
 
   filterByPhotos(vehicle: VehicleResponse, photoFilter: string): boolean {
@@ -322,13 +371,23 @@ export class VehicleListComponent implements OnInit {
   getVehicleImageUrl(vehicle: VehicleResponse): string {
     if (vehicle.imagens && vehicle.imagens.length > 0) {
       const fileName = vehicle.imagens[0];
+      console.log('[getVehicleImageUrl] Original fileName:', fileName);
+      
       if (fileName && fileName !== '[object Object]') {
-
-        if (fileName.startsWith('/uploads/')) {
-          return `http://localhost:5000${fileName}`;
+        if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
+          console.log('[getVehicleImageUrl] URL completa detectada, retornando:', fileName);
+          return fileName;
         }
 
-        return `http://localhost:5000/uploads/${fileName}`;
+        if (fileName.startsWith('/uploads/')) {
+          const fullUrl = `http://localhost:5000${fileName}`;
+          console.log('[getVehicleImageUrl] Adicionando domínio:', fullUrl);
+          return fullUrl;
+        }
+
+        const fullUrl = `http://localhost:5000/uploads/${fileName}`;
+        console.log('[getVehicleImageUrl] Adicionando caminho completo:', fullUrl);
+        return fullUrl;
       }
     }
     return 'https://cdn-icons-png.flaticon.com/512/11696/11696730.png';
@@ -372,9 +431,17 @@ export class VehicleListComponent implements OnInit {
   openImageViewer(vehicle: VehicleResponse): void {
     if (vehicle.imagens && vehicle.imagens.length > 0) {
       this.viewerImages = vehicle.imagens.map(img => {
+
+        if (img.startsWith('http://') || img.startsWith('https://')) {
+          return img;
+        }
+
+
         if (img.startsWith('/uploads/')) {
           return `http://localhost:5000${img}`;
         }
+
+
         return `http://localhost:5000/uploads/${img}`;
       });
     } else {

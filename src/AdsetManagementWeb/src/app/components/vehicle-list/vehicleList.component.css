@@ -439,8 +439,11 @@ mat-drawer-content {
 }
 
 .vehicle-card-row {
-  width: 100%;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  min-height: 180px;
+  max-height: 180px;
+  height: 180px;
 }
 
 .vehicle-card-row:hover {
@@ -451,7 +454,11 @@ mat-drawer-content {
 .vehicle-content {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 0;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
 }
 
 .vehicle-card {
@@ -467,19 +474,24 @@ mat-drawer-content {
 }
 
 .vehicle-image { 
-  position: relative; 
-  height: 200px; 
+  position: relative;
+  min-width: none;
+  max-width: fit-content;
+  max-height: fit-content;  
   overflow: hidden;
 }
 
 
 .vehicle-card-row .vehicle-image {
-  width: 280px;
-  height: 180px;
+  width: 180px;
   flex-shrink: 0;
   border-radius: 0;
   overflow: hidden;
   cursor: pointer;
+  align-self: stretch;
+  display: flex;
+  height: 100%;
+  max-height: 100%;
 }
 
 .vehicle-card-row .vehicle-photo { 
@@ -505,16 +517,18 @@ mat-drawer-content {
   background-color: var(--adset-light-gray);
   display: flex;
   flex-direction: row;
-  width: 100%;
-  height: fit-content;
-  max-height: 180px;
+  flex: 1;
+  height: 100%;
+  max-height: 100%;
 }
 
 .vehicle-card-row .vehicle-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
 }
 
 .right-icon-container {
@@ -565,29 +579,34 @@ mat-drawer-content {
 .delete-button-container {
   display: flex;
   align-items: center;
-  height: 180px; 
+  justify-content: center;
   background-color: #f1f1f1;
   border-radius: 0;
-  padding: 0 14px;
   cursor: pointer;
+  width: 60px;
+  height: 100%;
+  max-height: 100%;
+  flex-shrink: 0;
+  align-self: stretch;
 }
 .delete-button-container:hover {
   background-color: rgba(211, 47, 47, 0.1) !important;
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .delete-button {
   color: #d32f2f !important;
   background-color: transparent !important;
-  width: 52px;
-  height: 52px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
 
 .delete-button mat-icon {
   font-size: 30px;
-  width: 30px;
-  height: 30px;
 }
 
 
@@ -609,12 +628,34 @@ mat-drawer-content {
 .photo-count mat-icon { font-size: 16px; width: 16px; height: 16px; }
 
 .vehicle-info { padding: 16px; }
-.vehicle-title { font-size: 18px; font-weight: 600; margin: 0 0 12px 0; color: var(--adset-dark); }
+.vehicle-title { 
+  font-size: clamp(14px, 1.5vw, 18px); 
+  font-weight: 600; 
+  margin: 0 0 8px 0; 
+  color: var(--adset-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .vehicle-detail {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #666; font-size: 14px;
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
+  margin-bottom: 4px; 
+  color: #666; 
+  font-size: clamp(12px, 1.2vw, 14px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.vehicle-detail mat-icon { font-size: 18px; width: 18px; height: 18px; color: #888; }
+.vehicle-detail mat-icon { 
+  font-size: 18px; 
+  width: 18px; 
+  height: 18px; 
+  color: #888; 
+  flex-shrink: 0;
+}
 
 .vehicle-features { margin-top: 12px; }
 .features-chips { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -631,8 +672,8 @@ mat-drawer-content {
   justify-content: flex-end; 
   align-items: flex-end; 
   padding: 0;
-  height: 180px;
-  max-height: 180px;
+  height: 100%;
+  max-height: 100%;
   background-color: transparent;
   border-top: none;
 }
@@ -657,18 +698,20 @@ mat-drawer-content {
 }
 
 .vehicle-price { 
-  font-size: 14px; 
+  font-size: clamp(12px, 1.3vw, 14px); 
   width: 100%;
   height: 100%;
   font-weight: 600; 
   color: var(--adset-green); 
   padding: 2px;
+  white-space: nowrap;
 }
 
 .action-buttons-footer { 
   display: flex; 
-  gap: 12px; 
+  gap: 8px; 
   align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .action-btn {
@@ -803,6 +846,7 @@ mat-drawer-content {
   .delete-button-container {
     height: auto;
     padding: 8px;
+    max-height: 100%;
     align-self: flex-end;
     width: fit-content;
   }
@@ -816,9 +860,9 @@ mat-drawer-content {
     gap: 16px;
   }
 
-  /* Responsividade para filtros */
+  
   .filter-row {
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas em telas médias */
+    grid-template-columns: repeat(3, 1fr); 
     gap: 12px;
   }
 }
@@ -852,14 +896,14 @@ mat-drawer-content {
 @media (max-width: 480px) {
   .vehicles-grid { grid-template-columns: 1fr; }
   
-  /* Filtros em uma coluna para telas pequenas */
+  
   .filter-row {
-    grid-template-columns: 1fr; /* 1 coluna em telas pequenas */
+    grid-template-columns: 1fr; 
     gap: 8px;
   }
 }
 
-/* Visualizador de Imagens */
+
 .image-viewer-overlay {
   position: fixed;
   top: 0;
@@ -934,7 +978,7 @@ mat-drawer-content {
   font-weight: 500;
 }
 
-/* Modal de Opcionais */
+
 .options-modal-overlay {
   position: fixed;
   top: 0;

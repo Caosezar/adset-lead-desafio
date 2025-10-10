@@ -32,6 +32,13 @@ public class VehicleImageService : IVehicleImageService
         var response = new ImageUploadResponse { VehicleId = vehicleId };
         var uploadedCount = 0;
 
+        if (request?.Images == null || request.Images.Count == 0)
+        {
+            Console.WriteLine("[UploadImages] Nenhuma imagem recebida no request, pq será?");
+            response.Messages.Add("Nenhuma imagem foi enviada");
+            return response;
+        }
+
         foreach (var image in request.Images)
         {
             if (existingCount + uploadedCount >= MaxImagesPerVehicle)

@@ -76,12 +76,12 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-    Console.WriteLine("Aplicação configurada com sucesso. Iniciando...");
+    Console.WriteLine("Aplicaï¿½ï¿½o configurada com sucesso. Iniciando...");
     app.Run();
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"Erro na inicialização da aplicação: {ex.Message}");
+    Console.WriteLine($"Erro na inicializaï¿½ï¿½o da aplicaï¿½ï¿½o: {ex.Message}");
     Console.WriteLine($"StackTrace: {ex.StackTrace}");
     throw;
 }

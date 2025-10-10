@@ -90,6 +90,46 @@
 
         
         <div class="form-section">
+          <h3>Planos de Anúncio</h3>
+          <div class="plans-container-modal">
+            
+            <div class="plan-column-modal">
+              <div class="platform-header-modal icarros-header">
+                <img src="https://tse2.mm.bing.net/th/id/OIP.figLNbqVKbEgmRKcVjSdJQAAAA?rs=1&pid=ImgDetMain&o=7&rm=3" 
+                     alt="iCarros" class="platform-icon-modal">
+                <span>iCarros</span>
+              </div>
+              <mat-form-field appearance="outline" class="form-field full-width">
+                <mat-label>Pacote iCarros</mat-label>
+                <mat-select formControlName="pacoteICarros">
+                  <mat-option *ngFor="let plan of iCarrosPlans" [value]="plan.value">
+                    {{ plan.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            
+            <div class="plan-column-modal">
+              <div class="platform-header-modal webmotors-header">
+                <img src="https://play-lh.googleusercontent.com/-ZOWrOm0x1MCVkiwww0ySpP-jLSoLwLLcTp2_qEix2QTzJRjy8Ie2sN7RFITrURpAA" 
+                     alt="WebMotors" class="platform-icon-modal">
+                <span>WebMotors</span>
+              </div>
+              <mat-form-field appearance="outline" class="form-field full-width">
+                <mat-label>Pacote WebMotors</mat-label>
+                <mat-select formControlName="pacoteWebMotors">
+                  <mat-option *ngFor="let plan of webMotorsPlans" [value]="plan.value">
+                    {{ plan.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="form-section">
           <h3>Imagens</h3>
           
           
@@ -106,10 +146,10 @@
           <div *ngIf="existingImages.length > 0" class="images-section">
             <h4>Imagens Atuais</h4>
             <div class="images-grid">
-              <div *ngFor="let imageUrl of existingImages; let i = index" class="image-item">
-                <img [src]="imageUrl" [alt]="'Imagem ' + (i + 1)">
-                <button type="button" mat-icon-button class="remove-image-btn" (click)="removeImage(i, true)">
-                  <mat-icon>delete</mat-icon>
+              <div *ngFor="let image of existingImages; let i = index" class="image-item">
+                <img [src]="image.url" [alt]="'Imagem ' + (i + 1)">
+                <button type="button" mat-icon-button class="remove-image-btn" (click)="removeImage(i, true)" matTooltip="Remover imagem">
+                  <mat-icon>close</mat-icon>
                 </button>
               </div>
             </div>
@@ -121,8 +161,8 @@
             <div class="images-grid">
               <div *ngFor="let imageUrl of imagePreviewUrls; let i = index" class="image-item">
                 <img [src]="imageUrl" [alt]="'Nova imagem ' + (i + 1)">
-                <button type="button" mat-icon-button class="remove-image-btn" (click)="removeImage(i, false)">
-                  <mat-icon>delete</mat-icon>
+                <button type="button" mat-icon-button class="remove-image-btn" (click)="removeImage(i, false)" matTooltip="Remover imagem">
+                  <mat-icon>close</mat-icon>
                 </button>
               </div>
             </div>

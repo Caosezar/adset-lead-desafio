@@ -19,7 +19,7 @@ public class CreateVehicleWithImagesRequest
     public string Ano { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Placa é obrigatória")]
-    [RegularExpression(@"^[A-Z]{3}-\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$", ErrorMessage = "Placa deve estar no formato ABC-1234 ou ABC1D23 (Padrão Mercosul)")]
+    [RegularExpression(@"^[A-Z]{3}-?\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$", ErrorMessage = "Placa deve estar no formato ABC-1234, ABC1234 ou ABC1D23 (Mercosul)")]
     public string Placa { get; set; } = string.Empty;
 
     [Range(0, int.MaxValue, ErrorMessage = "Quilometragem deve ser maior ou igual a zero")]

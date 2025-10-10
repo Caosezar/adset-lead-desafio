@@ -81,7 +81,9 @@ public class VehicleService : IVehicleService
             }
         }
 
-        return VehicleMapper.Map(createdVehicle);
+        
+        var vehicleWithImages = await GetVehicleByIdAsync(createdVehicle.Id);
+        return vehicleWithImages!;
     }
 
     public async Task<VehicleResponse?> GetVehicleByIdAsync(int id)
@@ -98,8 +100,6 @@ public class VehicleService : IVehicleService
     {
         var vehicleImages = await _vehicleImageRepository.GetImagesByVehicleIdAsync(vehicle.Id);
         vehicle.Imagens = vehicleImages.Select(img => img.ImageUrl).ToList<string?>();
-        
-        await _vehicleRepository.UpdateAsync(vehicle);
     }
 
     public async Task<VehicleListResponse> GetVehiclesAsync(VehicleFilterRequest filter)
@@ -116,6 +116,12 @@ public class VehicleService : IVehicleService
             .Take(filter.PageSize)
             .ToList();
 
+        
+        foreach (var vehicle in pagedVehicles)
+        {
+            await SyncVehicleImagesAsync(vehicle);
+        }
+
         return VehicleMapper.Map(pagedVehicles, totalItems, filter.Page, filter.PageSize);
     }
 
@@ -126,7 +132,14 @@ public class VehicleService : IVehicleService
 
         VehicleMapper.Map(vehicle, request);
         var updatedVehicle = await _vehicleRepository.UpdateAsync(vehicle);
-        return updatedVehicle != null ? VehicleMapper.Map(updatedVehicle) : null;
+        
+        if (updatedVehicle != null)
+        {
+            await SyncVehicleImagesAsync(updatedVehicle);
+            return VehicleMapper.Map(updatedVehicle);
+        }
+        
+        return null;
     }
 
     public async Task<bool> DeleteVehicleAsync(int id)
@@ -141,6 +154,13 @@ public class VehicleService : IVehicleService
 
         VehicleMapper.Map(vehicle, request);
         var updatedVehicle = await _vehicleRepository.UpdateAsync(vehicle);
-        return updatedVehicle != null ? VehicleMapper.Map(updatedVehicle) : null;
+        
+        if (updatedVehicle != null)
+        {
+            await SyncVehicleImagesAsync(updatedVehicle);
+            return VehicleMapper.Map(updatedVehicle);
+        }
+        
+        return null;
     }
 }

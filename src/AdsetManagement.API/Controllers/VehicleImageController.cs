@@ -21,6 +21,25 @@ public class VehicleImageController : ControllerBase
     {
         try
         {
+            
+            if (request?.Images != null)
+            {
+                foreach (var img in request.Images)
+                {
+                    Console.WriteLine($"[VehicleImageController] Image: {img.FileName}, Size: {img.Length}, Type: {img.ContentType}");
+                }
+            }
+            
+            if (request?.Images == null || request.Images.Count == 0)
+            {
+                return Ok(new ImageUploadResponse 
+                { 
+                    VehicleId = vehicleId, 
+                    UploadedCount = 0,
+                    Messages = new List<string> { "Nenhuma imagem recebida no servidor" }
+                });
+            }
+            
             var response = await _vehicleImageService.UploadImagesAsync(vehicleId, request);
             return Ok(response);
         }
@@ -45,5 +64,37 @@ public class VehicleImageController : ControllerBase
             return NotFound();
 
         return NoContent();
+    }
+}
+
+[ApiController]
+[Route("uploads/vehicles/{vehicleId}")]
+public class ImageFileController : ControllerBase
+{
+    private readonly IWebHostEnvironment _environment;
+
+    public ImageFileController(IWebHostEnvironment environment)
+    {
+        _environment = environment;
+    }
+
+    [HttpGet("{fileName}")]
+    public IActionResult GetImage(int vehicleId, string fileName)
+    {
+        var webRootPath = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+        var filePath = Path.Combine(webRootPath, "uploads", "vehicles", vehicleId.ToString(), fileName);
+
+        if (!System.IO.File.Exists(filePath))
+            return NotFound();
+
+        var mimeType = fileName.ToLower() switch
+        {
+            var f when f.EndsWith(".jpg") || f.EndsWith(".jpeg") => "image/jpeg",
+            var f when f.EndsWith(".png") => "image/png",
+            var f when f.EndsWith(".webp") => "image/webp",
+            _ => "application/octet-stream"
+        };
+
+        return PhysicalFile(filePath, mimeType);
     }
 }

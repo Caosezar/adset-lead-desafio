@@ -121,6 +121,49 @@
   width: 100%;
 }
 
+.plans-container-modal {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.plan-column-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.platform-header-modal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+}
+
+.platform-header-modal.icarros-header {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  border: 2px solid #ff6b35;
+}
+
+.platform-header-modal.webmotors-header {
+  background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+  border: 2px solid #0066cc;
+}
+
+.platform-icon-modal {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: white;
+  padding: 4px;
+}
+
 
 .image-upload-area {
   border: 2px dashed #ddd;
@@ -271,6 +314,10 @@
   }
   
   .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plans-container-modal {
     grid-template-columns: 1fr;
   }
   
