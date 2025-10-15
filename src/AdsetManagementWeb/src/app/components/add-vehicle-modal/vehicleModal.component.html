@@ -90,7 +90,7 @@
 
         
         <div class="form-section">
-          <h3>Planos de Anúncio</h3>
+          <h3>Pacotes</h3>
           <div class="plans-container-modal">
             
             <div class="plan-column-modal">
@@ -130,16 +130,19 @@
 
         
         <div class="form-section">
-          <h3>Imagens</h3>
+          <h3>Imagens ({{ existingImages.length + imagePreviewUrls.length }} de 15)</h3>
           
           
           <div class="image-upload-area">
             <input type="file" #fileInput multiple accept="image/*" (change)="onImageSelect($event)" style="display: none;">
-            <button type="button" mat-raised-button color="primary" (click)="fileInput.click()">
+            <button type="button" mat-raised-button color="primary" (click)="fileInput.click()" 
+              [disabled]="existingImages.length >= 15">
               <mat-icon>add_photo_alternate</mat-icon>
               Adicionar Imagens
             </button>
-            <p class="upload-hint">Selecione múltiplas imagens do veículo</p>
+            <p class="upload-hint">
+              Selecione múltiplas imagens do veículo (máximo {{ 15 - existingImages.length }} restantes)
+            </p>
           </div>
 
           

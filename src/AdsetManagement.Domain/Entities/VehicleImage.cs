@@ -8,6 +8,7 @@ public class VehicleImage
     public string ContentType { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
     public DateTime UploadDate { get; set; }
+    public int Order { get; set; }
     
     public Vehicle Vehicle { get; set; } = null!;
 }

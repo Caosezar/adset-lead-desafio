@@ -75,12 +75,12 @@ export class VehicleModalComponent implements OnInit {
     private http: HttpClient
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.initializeForm();
 
     if (this.isEditMode && this.vehicle) {
       this.populateForm();
-      this.loadExistingImages();
+      await this.loadExistingImages();
     }
   }
 
@@ -91,8 +91,8 @@ export class VehicleModalComponent implements OnInit {
       modelo: ['', Validators.required],
       ano: ['', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
       cor: ['', Validators.required],
-      km: ['', [Validators.required, Validators.min(0)]],
-      preco: ['', [Validators.required, Validators.min(0)]],
+      km: ['', [Validators.min(0)]],
+      preco: ['', [Validators.required, Validators.min(0.01)]],
 
       
       arCondicionado: [false],
@@ -156,9 +156,18 @@ export class VehicleModalComponent implements OnInit {
     const files = event.target.files;
     if (!files) return;
 
+    const MAX_IMAGES = 15;
+    const currentTotalImages = this.existingImages.length + this.selectedImages.length;
+    const availableSlots = MAX_IMAGES - this.existingImages.length;
+    
+    if (files.length > availableSlots) {
+      alert(`Você pode adicionar no máximo ${availableSlots} imagem(ns). Limite total: ${MAX_IMAGES} imagens por veículo.`);
+      event.target.value = '';
+      return;
+    }
+
     this.selectedImages = Array.from(files);
     this.imagePreviewUrls = [];
-
 
     for (let file of this.selectedImages) {
       const reader = new FileReader();
@@ -235,7 +244,7 @@ export class VehicleModalComponent implements OnInit {
           ano: formValue.ano?.toString() || '',
           cor: formValue.cor,
           km: formValue.km,
-          preco: parseFloat(formValue.preco) || 0,
+          preco: parseFloat(formValue.preco),
           otherOptions: otherOptions,
           pacoteICarros: formValue.pacoteICarros || null,
           pacoteWebMotors: formValue.pacoteWebMotors || null
@@ -258,7 +267,7 @@ export class VehicleModalComponent implements OnInit {
           ano: formValue.ano?.toString() || '',
           cor: formValue.cor,
           km: formValue.km,
-          preco: parseFloat(formValue.preco) || 0,
+          preco: parseFloat(formValue.preco),
           otherOptions: otherOptions,
           pacoteICarros: formValue.pacoteICarros || null,
           pacoteWebMotors: formValue.pacoteWebMotors || null
@@ -340,9 +349,15 @@ export class VehicleModalComponent implements OnInit {
   getFieldError(fieldName: string): string {
     const control = this.vehicleForm.get(fieldName);
     if (control?.errors && control.touched) {
-      if (control.errors['required']) return `${fieldName} é obrigatório`;
+      if (control.errors['required']) {
+        if (fieldName === 'preco') return 'Preço é obrigatório';
+        return `${fieldName} é obrigatório`;
+      }
       if (control.errors['pattern']) return `${fieldName} inválido`;
-      if (control.errors['min']) return `${fieldName} deve ser maior que ${control.errors['min'].min}`;
+      if (control.errors['min']) {
+        if (fieldName === 'preco') return 'Preço deve ser maior que R$ 0,00';
+        return `${fieldName} deve ser maior que ${control.errors['min'].min}`;
+      }
       if (control.errors['max']) return `${fieldName} deve ser menor que ${control.errors['max'].max}`;
     }
     return '';

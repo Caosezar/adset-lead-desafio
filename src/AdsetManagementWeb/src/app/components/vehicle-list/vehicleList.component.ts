@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 import { VehicleListResponse } from '../../api/models/VehicleListResponse';
 import { VehicleResponse } from '../../api/models/VehicleResponse';
 import { VehicleImageService } from '../../api/services/VehicleImageService';
@@ -69,7 +71,9 @@ export class VehicleListComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private vehicleService: VehicleService,
-    private vehicleImageService: VehicleImageService
+    private vehicleImageService: VehicleImageService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
   ) {
     this.filterForm = this.fb.group({
       plate: [''],
@@ -82,6 +86,15 @@ export class VehicleListComponent implements OnInit {
       features: ['Todos'],
       color: ['Todos']
     });
+
+    this.matIconRegistry.addSvgIcon(
+      'clear-sort',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/clear-sort.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+      'clear-plans',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/clear-plans.svg')
+    );
   }
 
   ngOnInit(): void {

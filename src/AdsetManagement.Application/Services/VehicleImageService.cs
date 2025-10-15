@@ -68,7 +68,8 @@ public class VehicleImageService : IVehicleImageService
                 FileName = image.FileName,
                 ContentType = image.ContentType ?? "application/octet-stream",
                 ImageUrl = imageUrl,
-                UploadDate = DateTime.UtcNow
+                UploadDate = DateTime.UtcNow,
+                Order = existingCount + uploadedCount
             };
 
             await _vehicleImageRepository.AddImageAsync(vehicleImage);

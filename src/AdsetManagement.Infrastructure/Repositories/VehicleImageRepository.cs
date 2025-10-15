@@ -34,6 +34,7 @@ public class VehicleImageRepository : IVehicleImageRepository
     {
         return await _context.VehicleImages
             .Where(i => i.VehicleId == vehicleId)
+            .OrderBy(i => i.Order)
             .ToListAsync();
     }
 
