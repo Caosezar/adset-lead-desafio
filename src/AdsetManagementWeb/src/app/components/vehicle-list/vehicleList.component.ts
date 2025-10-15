@@ -592,7 +592,9 @@ export class VehicleListComponent implements OnInit {
     this.loadVehicles();
   }
 
-  onPageSizeChange(): void {
+  onPageSizeChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.pageSize = Number(target.value);
     this.currentPage = 1;
     this.loadVehicles();
   }

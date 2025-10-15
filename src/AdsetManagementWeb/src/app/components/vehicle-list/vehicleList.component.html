@@ -21,92 +21,81 @@
                                 [class.collapsed]="!filtersExpanded">
                                 <div class="filter-field-container" *ngIf="filtersExpanded">
                                     <label class="filter-label">Placa</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <input matInput formControlName="plate" placeholder="Digite a placa">
-                                    </mat-form-field>
+                                    <input type="text" class="custom-input" formControlName="plate">
                                 </div>
 
                                 <div class="filter-field-container" *ngIf="filtersExpanded">
                                     <label class="filter-label">Marca</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <input matInput formControlName="brand" placeholder="Digite a marca">
-                                    </mat-form-field>
+                                    <input type="text" class="custom-input" formControlName="brand">
                                 </div>
 
                                 <div class="filter-field-container" *ngIf="filtersExpanded">
                                     <label class="filter-label">Modelo</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <input matInput formControlName="model" placeholder="Digite o modelo">
-                                    </mat-form-field>
+                                    <input type="text" class="custom-input" formControlName="model">
                                 </div>
 
-                                <div class="filter-field-container small" *ngIf="filtersExpanded">
-                                    <label class="filter-label">Ano Mínimo</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <mat-select formControlName="yearMin" placeholder="Todos">
-                                            <mat-option value="">Todos</mat-option>
-                                            <mat-option *ngFor="let year of availableYears" [value]="year">
+                                <div class="year-fields-container" *ngIf="filtersExpanded">
+                                    <div class="filter-field-container small year-min">
+                                        <label class="filter-label">Ano Mínimo</label>
+                                        <select class="custom-input year-min-input" formControlName="yearMin">
+                                            <option value="">Todos</option>
+                                            <option *ngFor="let year of availableYears" [value]="year">
                                                 {{ year }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
+                                            </option>
+                                        </select>
+                                    </div>
 
-                                <div class="filter-field-container small" *ngIf="filtersExpanded">
-                                    <label class="filter-label">Ano Máximo</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <mat-select formControlName="yearMax" placeholder="Todos">
-                                            <mat-option value="">Todos</mat-option>
-                                            <mat-option *ngFor="let year of availableYears" [value]="year">
+                                    <div class="filter-field-container small year-max">
+                                        <label class="filter-label">Ano Máximo</label>
+                                        <select class="custom-input year-max-input" formControlName="yearMax">
+                                            <option value="">Todos</option>
+                                            <option *ngFor="let year of availableYears" [value]="year">
                                                 {{ year }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div class="filter-field-container" *ngIf="filtersExpanded">
                                     <label class="filter-label">Preço</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <mat-select formControlName="price" placeholder="Todos">
-                                            <mat-option *ngFor="let option of priceOptions" [value]="option">
-                                                {{ option }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                    <select class="custom-input" formControlName="price">
+                                        <option *ngFor="let option of priceOptions" [value]="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
                                 </div>
 
                                 <div class="filter-field-container" *ngIf="filtersExpanded">
                                     <label class="filter-label">Fotos</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <mat-select formControlName="photos" placeholder="Todos">
-                                            <mat-option *ngFor="let option of photoOptions" [value]="option">
-                                                {{ option }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                    <select class="custom-input" formControlName="photos">
+                                        <option *ngFor="let option of photoOptions" [value]="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
                                 </div>
 
                                 <div class="filter-field-container" *ngIf="filtersExpanded">
                                     <label class="filter-label">Opcionais</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <mat-select formControlName="features" placeholder="Todos">
-                                            <mat-option *ngFor="let option of featuresOptions" [value]="option">
-                                                {{ option }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                    <select class="custom-input" formControlName="features">
+                                        <option *ngFor="let option of featuresOptions" [value]="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
                                 </div>
 
                                 <div class="filter-field-container" *ngIf="filtersExpanded">
                                     <label class="filter-label">Cor</label>
-                                    <mat-form-field appearance="outline" class="filter-field">
-                                        <mat-select formControlName="color" placeholder="Todos">
-                                            <mat-option *ngFor="let option of colorOptions" [value]="option">
-                                                {{ option }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                    <select class="custom-input" formControlName="color">
+                                        <option *ngFor="let option of colorOptions" [value]="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
                                 </div>
+
+                                <button class="clear-filters-btn" (click)="onClearFilters()" matTooltip="Limpar filtros"
+                                    *ngIf="filtersExpanded">
+                                    <mat-icon svgIcon="clear-sort"></mat-icon>
+                                </button>
                             </div>
                         </form>
 
@@ -129,7 +118,7 @@
                         <div class="results-and-platforms">
                             <div class="results-header">
                                 <div class="results-options">
-                                    <button class="clear-sort-btn" (click)="clearSort()" matTooltip="Limpar ordenação">                                      
+                                    <button class="clear-sort-btn" (click)="clearSort()" matTooltip="Limpar ordenação">
                                         <div class="sort-arrows-reset">
                                             <mat-icon class="arrow-up">arrow_drop_up</mat-icon>
                                             <mat-icon class="arrow-down">arrow_drop_down</mat-icon>
@@ -188,24 +177,38 @@
                                 <div class="platforms-header-container">
                                     <div class="header-controls">
                                         <div class="items-per-page-control">
-                                            <mat-form-field appearance="outline" class="items-per-page-select">
-                                                <mat-label>Exibir</mat-label>
-                                                <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange()">
-                                                    <mat-option [value]="5">5</mat-option>
-                                                    <mat-option [value]="10">10</mat-option>
-                                                    <mat-option [value]="20">20</mat-option>
-                                                    <mat-option [value]="50">50</mat-option>
-                                                </mat-select>
-                                            </mat-form-field>
+                                            <div class="page-size-wrapper">
+                                                <span class="page-size-label">Exibir</span>
+                                                <select class="custom-page-size-select" [value]="pageSize"
+                                                    (change)="onPageSizeChange($event)">
+                                                    <option [value]="5">5</option>
+                                                    <option [value]="10">10</option>
+                                                    <option [value]="20">20</option>
+                                                    <option [value]="50">50</option>
+                                                    <option [value]="100">100</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="platform-header icarros-header">
-                                        <img src="https://tse2.mm.bing.net/th/id/OIP.figLNbqVKbEgmRKcVjSdJQAAAA?rs=1&pid=ImgDetMain&o=7&rm=3"
-                                            alt="iCarros" class="platform-icon">
+                                    <div class="platform-column">
+                                        <div class="platform-header icarros-header" matTooltip="iCarros" matTooltipPosition="above">
+                                            <img src="https://tse2.mm.bing.net/th/id/OIP.figLNbqVKbEgmRKcVjSdJQAAAA?rs=1&pid=ImgDetMain&o=7&rm=3"
+                                                alt="iCarros" class="platform-icon">
+                                        </div>
+                                        <div class="platform-actions-bubble">
+                                            <mat-icon class="bubble-icon arrow">arrow_downward</mat-icon>
+                                            <mat-icon svgIcon="clear-plans" class="bubble-icon"></mat-icon>
+                                        </div>
                                     </div>
-                                    <div class="platform-header webmotors-header">
-                                        <img src="https://play-lh.googleusercontent.com/-ZOWrOm0x1MCVkiwww0ySpP-jLSoLwLLcTp2_qEix2QTzJRjy8Ie2sN7RFITrURpAA"
-                                            alt="WebMotors" class="platform-icon">
+                                    <div class="platform-column">
+                                        <div class="platform-header webmotors-header" matTooltip="WebMotors" matTooltipPosition="above">
+                                            <img src="https://play-lh.googleusercontent.com/-ZOWrOm0x1MCVkiwww0ySpP-jLSoLwLLcTp2_qEix2QTzJRjy8Ie2sN7RFITrURpAA"
+                                                alt="WebMotors" class="platform-icon">
+                                        </div>
+                                        <div class="platform-actions-bubble">
+                                            <mat-icon class="bubble-icon arrow">arrow_downward</mat-icon>
+                                            <mat-icon svgIcon="clear-plans" class="bubble-icon"></mat-icon>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -228,10 +231,8 @@
                                         <mat-card class="vehicle-card-row">
                                             <div class="vehicle-content">
 
-                                                <div class="delete-button-container" 
-                                                    (click)="onDeleteVehicle(vehicle)"
-                                                    matTooltip="Excluir veículo"
-                                                    matTooltipPosition="right">
+                                                <div class="delete-button-container" (click)="onDeleteVehicle(vehicle)"
+                                                    matTooltip="Excluir veículo" matTooltipPosition="right">
                                                     <mat-icon>delete</mat-icon>
                                                 </div>
 
@@ -251,20 +252,20 @@
 
 
                                                         <div class="vehicle-detail">
-                                                            <mat-icon>directions_car</mat-icon>
-                                                            <span>{{vehicle.placa}}</span>
+                                                            <span>Placa - </span>
+                                                            <span class="vehicle-detail-value">{{vehicle.placa}}</span>
                                                         </div>
 
 
                                                         <div class="vehicle-detail" *ngIf="vehicle.km">
-                                                            <mat-icon>speed</mat-icon>
-                                                            <span>{{formatKilometers(vehicle.km)}} km</span>
+                                                            <span>Km - </span>
+                                                            <span class="vehicle-detail-value">{{formatKilometers(vehicle.km)}} km</span>
                                                         </div>
 
 
                                                         <div class="vehicle-detail" *ngIf="vehicle.cor">
-                                                            <mat-icon>palette</mat-icon>
-                                                            <span>{{vehicle.cor}}</span>
+                                                            <span>Cor - </span>
+                                                            <span class="vehicle-detail-value">{{vehicle.cor}}</span>
                                                         </div>
                                                     </mat-card-content>
 
@@ -281,7 +282,7 @@
                                                                 <div class="photo-indicator">
                                                                     <div (click)="openImageViewer(vehicle)"
                                                                         matTooltip="Ver fotos"
-                                                                     class="action-btn photo-btn">
+                                                                        class="action-btn photo-btn">
                                                                         <mat-icon>photo_camera</mat-icon>
                                                                     </div>
                                                                     <span class="photo-count-badge">{{
@@ -312,39 +313,40 @@
                                                             [class.active]="isDrawerOpen && selectedVehicleForDrawer?.id === vehicle.id"
                                                             (click)="toggleDrawer(vehicle)"
                                                             matTooltip="Ver/Ocultar planos">arrow_right_alt</mat-icon>
-                                                        
                                                     </div>
 
                                                     <div class="plans-container">
-                                                        <div class="plan-column" matTooltip="iCarros" matTooltipPosition="above">
+                                                        <div class="plan-column" matTooltip="iCarros"
+                                                            matTooltipPosition="above">
                                                             <div class="plan-options">
                                                                 <mat-checkbox class="plan-checkbox">
                                                                     <div class="plan-label">
                                                                         <span class="plan-name">Diamante Feirão</span>
-                                                                        <span class="plan-code">010 - 008</span>
+                                                                        <span class="plan-code"><span class="code-red">010</span> - <span class="code-green">008</span></span>
                                                                     </div>
                                                                 </mat-checkbox>
                                                                 <mat-checkbox class="plan-checkbox" [checked]="true">
                                                                     <div class="plan-label">
                                                                         <span class="plan-name">Diamante</span>
-                                                                        <span class="plan-code">030 - 025</span>
+                                                                        <span class="plan-code"><span class="code-red">030</span> - <span class="code-green">025</span></span>
                                                                     </div>
                                                                 </mat-checkbox>
                                                                 <mat-checkbox class="plan-checkbox">
                                                                     <div class="plan-label">
                                                                         <span class="plan-name">Platinum</span>
-                                                                        <span class="plan-code">040 - 010</span>
+                                                                        <span class="plan-code"><span class="code-red">040</span> - <span class="code-green">010</span></span>
                                                                     </div>
                                                                 </mat-checkbox>
                                                             </div>
                                                         </div>
-                                                        
-                                                        <div class="plan-column" matTooltip="WebMotors" matTooltipPosition="above">
+
+                                                        <div class="plan-column" matTooltip="WebMotors"
+                                                            matTooltipPosition="above">
                                                             <div class="plan-options">
                                                                 <mat-checkbox class="plan-checkbox" [checked]="true">
                                                                     <div class="plan-label">
                                                                         <span class="plan-name">Básico</span>
-                                                                        <span class="plan-code">030 - 025</span>
+                                                                        <span class="plan-code"><span class="code-red">030</span> - <span class="code-green">025</span></span>
                                                                     </div>
                                                                 </mat-checkbox>
                                                             </div>

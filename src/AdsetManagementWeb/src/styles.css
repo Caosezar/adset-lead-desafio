@@ -46,8 +46,13 @@ body {
 }
 
 
-.mat-checkbox-checked .mat-checkbox-background {
-  background-color: var(--adset-orange);
+.mat-checkbox-background {
+  background-color: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.54) !important;
+}
+
+.mat-checkbox-checkmark-path {
+  stroke: var(--adset-green) !important;
 }
 
 
