@@ -9,6 +9,7 @@ public interface IVehicleService
     Task<VehicleResponse> CreateVehicleWithImagesAsync(CreateVehicleWithImagesRequest request);
     Task<VehicleResponse?> GetVehicleByIdAsync(int id);
     Task<VehicleListResponse> GetVehiclesAsync(VehicleFilterRequest filter);
+    Task<List<string>> GetDistinctColorsAsync();
     Task<VehicleResponse?> UpdateVehicleAsync(int id, UpdateVehicleRequest request);
     Task<bool> DeleteVehicleAsync(int id);
     Task<VehicleResponse?> UpdateVehiclePacotesAsync(int id, UpdatePacotesRequest request);

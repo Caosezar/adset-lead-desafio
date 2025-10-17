@@ -69,6 +69,13 @@ public class VehicleController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("colors")]
+    public async Task<ActionResult<List<string>>> GetDistinctColors()
+    {
+        var colors = await _vehicleService.GetDistinctColorsAsync();
+        return Ok(colors);
+    }
+
     [HttpPut("{id:int}")]
     public async Task<ActionResult<VehicleResponse>> UpdateVehicle(int id, [FromBody] UpdateVehicleRequest request)
     {

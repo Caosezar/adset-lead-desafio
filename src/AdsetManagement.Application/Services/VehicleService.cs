@@ -126,6 +126,19 @@ public class VehicleService : IVehicleService
         return VehicleMapper.Map(pagedVehicles, totalItems, filter.Page, filter.PageSize);
     }
 
+    public async Task<List<string>> GetDistinctColorsAsync()
+    {
+        var vehicles = await _vehicleRepository.GetAllAsync();
+        var distinctColors = vehicles
+            .Where(v => !string.IsNullOrWhiteSpace(v.Cor))
+            .Select(v => v.Cor)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+        
+        return distinctColors!;
+    }
+
     public async Task<VehicleResponse?> UpdateVehicleAsync(int id, UpdateVehicleRequest request)
     {
         var vehicle = await _vehicleRepository.GetByIdAsync(id);

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -80,7 +81,8 @@ export class VehicleListComponent implements OnInit, OnDestroy {
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     private vehicleEventService: VehicleEventService,
-    private apiConfig: ApiConfigService
+    private apiConfig: ApiConfigService,
+    private http: HttpClient
   ) {
     this.filterForm = this.fb.group({
       plate: [''],
@@ -120,27 +122,9 @@ export class VehicleListComponent implements OnInit, OnDestroy {
   }
 
   loadDistinctColors(): void {
-    this.vehicleService.getApiVehicle(
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      1,
-      100
-    ).subscribe({
-      next: (response: VehicleListResponse) => {
-        const allVehicles = response.data || [];
-
-        const distinctColors: string[] = [...new Set(
-          allVehicles
-            .map(v => v.cor)
-            .filter((cor): cor is string => !!cor && cor.trim() !== '')
-        )].sort();
-
-        this.colorOptions = ['Todos', ...distinctColors];        
+    this.http.get<string[]>(this.apiConfig.buildUrl('/api/vehicle/colors')).subscribe({
+      next: (colors: string[]) => {
+        this.colorOptions = ['Todos', ...colors];
       },
       error: (error: any) => {
         console.error('Erro ao carregar cores distintas:', error);
