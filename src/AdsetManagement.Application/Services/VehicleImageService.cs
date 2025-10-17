@@ -34,7 +34,6 @@ public class VehicleImageService : IVehicleImageService
 
         if (request?.Images == null || request.Images.Count == 0)
         {
-            Console.WriteLine("[UploadImages] Nenhuma imagem recebida no request, pq será?");
             response.Messages.Add("Nenhuma imagem foi enviada");
             return response;
         }
@@ -59,7 +58,10 @@ public class VehicleImageService : IVehicleImageService
                 continue;
             }
 
-            var fileName = $"img_{DateTime.UtcNow:yyyyMMddHHmmss}_{vehicleId}{Path.GetExtension(image.FileName)}";
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+            var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
+            var fileName = $"img_{timestamp}_{uniqueId}_{vehicleId}{Path.GetExtension(image.FileName)}";
+            
             var imageUrl = await _fileService.SaveFileAsync(fileName, image.OpenReadStream(), vehicleId);
 
             var vehicleImage = new VehicleImage
@@ -77,9 +79,7 @@ public class VehicleImageService : IVehicleImageService
         }
 
         await _vehicleImageRepository.SaveChangesAsync();
-        
         await SyncVehicleImagesAsync(vehicleId);
-        
         response.UploadedCount = uploadedCount;
         if (uploadedCount > 0)
             response.Messages.Add($"{uploadedCount} Adicionado(s) com sucesso");
@@ -89,11 +89,16 @@ public class VehicleImageService : IVehicleImageService
 
     private async Task SyncVehicleImagesAsync(int vehicleId)
     {
+        //TODO ordenar as imagens
         var vehicle = await _vehicleRepository.GetByIdAsync(vehicleId);
         if (vehicle != null)
         {
             var vehicleImages = await _vehicleImageRepository.GetImagesByVehicleIdAsync(vehicleId);
-            vehicle.Imagens = vehicleImages.Select(img => img.ImageUrl).ToList<string?>();
+            vehicle.Imagens = vehicleImages
+    .OrderBy(img => img.Order)
+    .Select(img => img.ImageUrl)
+    .ToList<string?>();
+
             await _vehicleRepository.UpdateAsync(vehicle);
         }
     }
@@ -101,7 +106,7 @@ public class VehicleImageService : IVehicleImageService
     public async Task<List<ImageResponse>> GetImagesAsync(int vehicleId)
     {
         var images = await _vehicleImageRepository.GetImagesByVehicleIdAsync(vehicleId);
-        
+
         return images.Select(i => new ImageResponse
         {
             Id = i.Id,

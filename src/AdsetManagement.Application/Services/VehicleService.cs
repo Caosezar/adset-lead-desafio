@@ -100,7 +100,12 @@ public class VehicleService : IVehicleService
     private async Task SyncVehicleImagesAsync(Vehicle vehicle)
     {
         var vehicleImages = await _vehicleImageRepository.GetImagesByVehicleIdAsync(vehicle.Id);
-        vehicle.Imagens = vehicleImages.Select(img => img.ImageUrl).ToList<string?>();
+        
+        // Limpa e atualiza apenas o campo Imagens (não a navegação VehicleImages)
+        vehicle.Imagens = vehicleImages
+            .OrderBy(img => img.Order)
+            .Select(img => img.ImageUrl)
+            .ToList<string?>();
     }
 
     public async Task<VehicleListResponse> GetVehiclesAsync(VehicleFilterRequest filter)

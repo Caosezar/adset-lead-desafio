@@ -376,7 +376,7 @@ export class VehicleListComponent implements OnInit, OnDestroy {
 
   getVehicleImageUrl(vehicle: VehicleResponse): string {
     if (vehicle.imagens && vehicle.imagens.length > 0) {
-      const fileName = vehicle.imagens[0];      
+      const fileName = vehicle.imagens[0];
       
       if (fileName && fileName !== '[object Object]') {
         if (fileName.startsWith('http://') || fileName.startsWith('https://')) {          
