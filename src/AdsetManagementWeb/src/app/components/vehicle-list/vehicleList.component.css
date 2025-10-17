@@ -361,26 +361,27 @@ mat-drawer-content {
 }
 
 .filter-label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: #666;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   margin-right: 0;
   width: fit-content;
 }
 
 .custom-input {
   width: 94%;
-  padding: 14px 16px;
+  padding: 10px 16px;
   border: 1px solid rgba(0, 0, 0, 0.23);
   border-radius: 20px;
-  font-size: 16px;
+  font-size: 14px;
   font-family: inherit;
   color: rgba(0, 0, 0, 0.87);
   background-color: var(--adset-lighter-gray);
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  height: 40px;
 }
 
 input.custom-input {
@@ -403,7 +404,7 @@ select.custom-input {
 .custom-input:focus {
   border-color: var(--adset-orange, #ff6b35);
   border-width: 2px;
-  padding: 13px 15px
+  padding: 9px 15px;
 }
 
 .custom-input:disabled {
