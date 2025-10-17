@@ -717,11 +717,12 @@ select.custom-input option {
 }
 
 .custom-page-size-select {
+  height: 40px;
   min-width: 140px;
-  padding: 12px 30px 12px 70px;
+  padding: 5px 20px 12px 60px;
   border: 1px solid rgba(0, 0, 0, 0.23);
   border-radius: 20px 0 0 20px;
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 800;
   background-color: white;
   outline: none;
