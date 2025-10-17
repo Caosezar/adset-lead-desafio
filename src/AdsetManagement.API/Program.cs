@@ -5,10 +5,15 @@ using AdsetManagement.Infrastructure.Repositories;
 using AdsetManagement.Infrastructure.Services;
 using AdsetManagement.Application.Interfaces;
 using AdsetManagement.Application.Services;
+using AdsetManagement.Application.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new NullableIntConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

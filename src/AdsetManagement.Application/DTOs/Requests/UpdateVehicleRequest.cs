@@ -38,9 +38,9 @@ public class UpdateVehicleRequest
 
     public OtherOptionsRequest? OtherOptions { get; set; }
 
-    [RegularExpression(@"^(Bronze|Diamante|Platinum|Básico)$", ErrorMessage = "Pacote iCarros deve ser: Bronze, Diamante, Platinum ou Básico")]
+    [RegularExpression(@"^(Bronze|Diamante|Platinum)$", ErrorMessage = "Pacote iCarros deve ser: Bronze, Diamante ou Platinum")]
     public string? PacoteICarros { get; set; }
 
-    [RegularExpression(@"^(Bronze|Diamante|Platinum|Básico)$", ErrorMessage = "Pacote WebMotors deve ser: Bronze, Diamante, Platinum ou Básico")]
+    [RegularExpression(@"^(Básico)$", ErrorMessage = "Pacote WebMotors deve ser: Básico")]
     public string? PacoteWebMotors { get; set; }
 }

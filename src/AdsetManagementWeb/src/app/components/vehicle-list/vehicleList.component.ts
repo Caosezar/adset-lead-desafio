@@ -152,7 +152,6 @@ export class VehicleListComponent implements OnInit, OnDestroy {
         this.totalItems = response.totalItems || 0;
         this.totalPages = response.totalPages || 1;
 
-
         this.calculateStats();
 
         this.isLoading = false;        

@@ -234,28 +234,25 @@ export class VehicleModalComponent implements OnInit {
         (otherOptions as any)[feature.key] = formValue[feature.key] || false;
       });
 
-      if (this.isEditMode && this.vehicle) {
-        // Atualiza o veículo usando o endpoint normal
+      if (this.isEditMode && this.vehicle) {        
         const updateRequest: UpdateVehicleRequest = {
           placa: formValue.placa,
           marca: formValue.marca,
           modelo: formValue.modelo,
           ano: formValue.ano?.toString() || '',
           cor: formValue.cor,
-          km: formValue.km,
+          km: formValue.km || null,
           preco: parseFloat(formValue.preco),
           otherOptions: otherOptions,
           pacoteICarros: formValue.pacoteICarros || null,
           pacoteWebMotors: formValue.pacoteWebMotors || null
         };
         savedVehicle = await this.vehicleService.putApiVehicle(this.vehicle.id!, updateRequest).toPromise();
-        
-        // Se houver novas imagens, faz upload separado (mesmo fluxo do Create)
+                
         if (this.selectedImages.length > 0 && savedVehicle.id) {
           console.log('Fazendo upload de', this.selectedImages.length, 'imagem(ns)...');
           await this.uploadImages(savedVehicle.id);
-          
-          // Recarrega o veículo com as novas imagens
+                    
           const updatedVehicle = await this.vehicleService.getApiVehicle1(savedVehicle.id).toPromise();
           savedVehicle = updatedVehicle;
         }
@@ -267,7 +264,7 @@ export class VehicleModalComponent implements OnInit {
           modelo: formValue.modelo,
           ano: formValue.ano?.toString() || '',
           cor: formValue.cor,
-          km: formValue.km,
+          km: formValue.km || null,
           preco: parseFloat(formValue.preco),
           otherOptions: otherOptions,
           pacoteICarros: formValue.pacoteICarros || null,
@@ -285,8 +282,7 @@ export class VehicleModalComponent implements OnInit {
         }
       }
       this.save.emit(savedVehicle);
-
-      // Notifica que o veículo foi atualizado/criado
+      
       this.vehicleEventService.notifyVehicleUpdated();
 
       this.refreshList.emit();
@@ -320,8 +316,7 @@ export class VehicleModalComponent implements OnInit {
         });
         formData.append('Images', image, image.name);
       });
-
-      // Verificar conteúdo do FormData
+      
       console.log('[uploadImages] Conteúdo do FormData:');
       formData.forEach((value, key) => {
         if (value instanceof File) {

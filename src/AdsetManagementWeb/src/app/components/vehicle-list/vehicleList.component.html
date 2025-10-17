@@ -319,19 +319,19 @@
                                                         <div class="plan-column" matTooltip="iCarros"
                                                             matTooltipPosition="above">
                                                             <div class="plan-options">
-                                                                <mat-checkbox class="plan-checkbox">
+                                                                <mat-checkbox class="plan-checkbox" [checked]="vehicle.pacoteICarros === 'Bronze'" [disabled]="true">
                                                                     <div class="plan-label">
-                                                                        <span class="plan-name">Diamante Feirão</span>
+                                                                        <span class="plan-name">Bronze</span>
                                                                         <span class="plan-code"><span class="code-red">010</span> - <span class="code-green">008</span></span>
                                                                     </div>
                                                                 </mat-checkbox>
-                                                                <mat-checkbox class="plan-checkbox" [checked]="true">
+                                                                <mat-checkbox class="plan-checkbox" [checked]="vehicle.pacoteICarros === 'Diamante'" [disabled]="true">
                                                                     <div class="plan-label">
                                                                         <span class="plan-name">Diamante</span>
                                                                         <span class="plan-code"><span class="code-red">030</span> - <span class="code-green">025</span></span>
                                                                     </div>
                                                                 </mat-checkbox>
-                                                                <mat-checkbox class="plan-checkbox">
+                                                                <mat-checkbox class="plan-checkbox" [checked]="vehicle.pacoteICarros === 'Platinum'" [disabled]="true">
                                                                     <div class="plan-label">
                                                                         <span class="plan-name">Platinum</span>
                                                                         <span class="plan-code"><span class="code-red">040</span> - <span class="code-green">010</span></span>
@@ -343,7 +343,7 @@
                                                         <div class="plan-column" matTooltip="WebMotors"
                                                             matTooltipPosition="above">
                                                             <div class="plan-options">
-                                                                <mat-checkbox class="plan-checkbox" [checked]="true">
+                                                                <mat-checkbox class="plan-checkbox" [checked]="vehicle.pacoteWebMotors === 'Básico'" [disabled]="true">
                                                                     <div class="plan-label">
                                                                         <span class="plan-name">Básico</span>
                                                                         <span class="plan-code"><span class="code-red">030</span> - <span class="code-green">025</span></span>
