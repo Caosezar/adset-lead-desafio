@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using AdsetManagement.Application.Attributes;
+using AdsetManagement.Application.Converters;
 
 namespace AdsetManagement.Application.DTOs.Requests;
 

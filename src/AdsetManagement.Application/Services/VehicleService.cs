@@ -4,6 +4,7 @@ using AdsetManagement.Application.Interfaces;
 using AdsetManagement.Application.Mappings;
 using AdsetManagement.Domain.Entities;
 using AdsetManagement.Domain.Interfaces;
+using AdsetManagement.Domain.ValueObjects;
 
 namespace AdsetManagement.Application.Services;
 

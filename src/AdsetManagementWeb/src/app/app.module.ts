@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -27,6 +27,7 @@ import { AppComponent } from './app.component';
 import { VehicleListComponent } from './components/vehicle-list/vehicleList.component';
 import { VehicleModalComponent } from './components/add-vehicle-modal/vehicleModal.component';
 import { VehicleStatsComponent } from './components/vehicle-stats/vehicle-stats.component';
+import { CleanRequestInterceptor } from './interceptors/clean-request.interceptor';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,13 @@ import { VehicleStatsComponent } from './components/vehicle-stats/vehicle-stats.
     MatChipsModule,
     MatSidenavModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CleanRequestInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

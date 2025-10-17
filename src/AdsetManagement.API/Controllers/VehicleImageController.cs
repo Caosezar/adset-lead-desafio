@@ -20,16 +20,7 @@ public class VehicleImageController : ControllerBase
     public async Task<ActionResult<ImageUploadResponse>> UploadImages(int vehicleId, [FromForm] ImageUploadRequest request)
     {
         try
-        {
-            
-            if (request?.Images != null)
-            {
-                foreach (var img in request.Images)
-                {
-                    Console.WriteLine($"[VehicleImageController] Image: {img.FileName}, Size: {img.Length}, Type: {img.ContentType}");
-                }
-            }
-            
+        {   
             if (request?.Images == null || request.Images.Count == 0)
             {
                 return Ok(new ImageUploadResponse 

@@ -1,25 +1,30 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 import { VehicleListResponse } from '../../api/models/VehicleListResponse';
 import { VehicleResponse } from '../../api/models/VehicleResponse';
 import { VehicleImageService } from '../../api/services/VehicleImageService';
 import { VehicleService } from '../../api/services/VehicleService';
 import { VEHICLE_YEARS, VehicleYear } from '../../utils/date.utils';
 import { VehicleStats } from '../vehicle-stats/vehicle-stats.component';
+import { VehicleEventService } from '../../services/vehicle-event.service';
+import { ApiConfigService } from '../../services/api-config.service';
 
 @Component({
   selector: 'app-vehicle-list',
   templateUrl: './vehicleList.component.html',
   styleUrls: ['./vehicleList.component.css']
 })
-export class VehicleListComponent implements OnInit {
+export class VehicleListComponent implements OnInit, OnDestroy {
 
   filterForm: FormGroup;
   vehicles: VehicleResponse[] = [];
   filteredVehicles: VehicleResponse[] = [];
   vehicleStats: VehicleStats = { total: 0, withPhotos: 0, withoutPhotos: 0 };
+  
+  private vehicleUpdateSubscription?: Subscription;
 
   currentPage = 1;
   pageSize = 5;
@@ -73,7 +78,9 @@ export class VehicleListComponent implements OnInit {
     private vehicleService: VehicleService,
     private vehicleImageService: VehicleImageService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private vehicleEventService: VehicleEventService,
+    private apiConfig: ApiConfigService
   ) {
     this.filterForm = this.fb.group({
       plate: [''],
@@ -100,6 +107,16 @@ export class VehicleListComponent implements OnInit {
   ngOnInit(): void {
     this.loadVehicles();
     this.loadDistinctColors();
+    
+    this.vehicleUpdateSubscription = this.vehicleEventService.vehicleUpdated$.subscribe(() => {
+      this.loadVehicles();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.vehicleUpdateSubscription) {
+      this.vehicleUpdateSubscription.unsubscribe();
+    }
   }
 
   loadDistinctColors(): void {
@@ -123,8 +140,7 @@ export class VehicleListComponent implements OnInit {
             .filter((cor): cor is string => !!cor && cor.trim() !== '')
         )].sort();
 
-        this.colorOptions = ['Todos', ...distinctColors];
-        console.log('Cores distintas carregadas:', distinctColors);
+        this.colorOptions = ['Todos', ...distinctColors];        
       },
       error: (error: any) => {
         console.error('Erro ao carregar cores distintas:', error);
@@ -155,8 +171,7 @@ export class VehicleListComponent implements OnInit {
 
         this.calculateStats();
 
-        this.isLoading = false;
-        console.log('Veículos carregados:', this.vehicles.length);
+        this.isLoading = false;        
       },
       error: (error: any) => {
         console.error('Erro ao carregar veículos:', error);
@@ -202,8 +217,7 @@ export class VehicleListComponent implements OnInit {
         );
       });
 
-      this.isLoading = false;
-      console.log('Filtros aplicados:', this.filteredVehicles.length, 'veículos encontrados');
+      this.isLoading = false;      
     }, 500);
   }
 
@@ -283,8 +297,7 @@ export class VehicleListComponent implements OnInit {
       this.isLoading = true;
 
       this.vehicleService.deleteApiVehicle(vehicle.id).subscribe({
-        next: () => {
-          console.log('Veículo excluído com sucesso');
+        next: () => {          
           this.loadVehicles();
         },
         error: (error) => {
@@ -296,8 +309,7 @@ export class VehicleListComponent implements OnInit {
     }
   }
 
-  onVehicleSave(savedVehicle: VehicleResponse): void {
-    console.log('Veículo salvo:', savedVehicle);
+  onVehicleSave(savedVehicle: VehicleResponse): void {    
     this.isModalOpen = false;
     this.selectedVehicle = undefined;
 
@@ -316,8 +328,7 @@ export class VehicleListComponent implements OnInit {
       return;
     }
 
-
-    console.log('Exportação Excel - Feature não implementada ainda');
+    
     alert('Feature de exportação será implementada em breve.');
   }
 
@@ -327,8 +338,7 @@ export class VehicleListComponent implements OnInit {
     }
 
 
-
-    console.log('Salvando veículos pendentes:', this.pendingVehicles);
+    
 
 
     this.pendingVehicles = [];
@@ -383,24 +393,14 @@ export class VehicleListComponent implements OnInit {
 
   getVehicleImageUrl(vehicle: VehicleResponse): string {
     if (vehicle.imagens && vehicle.imagens.length > 0) {
-      const fileName = vehicle.imagens[0];
-      console.log('[getVehicleImageUrl] Original fileName:', fileName);
+      const fileName = vehicle.imagens[0];      
       
       if (fileName && fileName !== '[object Object]') {
-        if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
-          console.log('[getVehicleImageUrl] URL completa detectada, retornando:', fileName);
+        if (fileName.startsWith('http://') || fileName.startsWith('https://')) {          
           return fileName;
         }
 
-        if (fileName.startsWith('/uploads/')) {
-          const fullUrl = `http://localhost:5000${fileName}`;
-          console.log('[getVehicleImageUrl] Adicionando domínio:', fullUrl);
-          return fullUrl;
-        }
-
-        const fullUrl = `http://localhost:5000/uploads/${fileName}`;
-        console.log('[getVehicleImageUrl] Adicionando caminho completo:', fullUrl);
-        return fullUrl;
+        return this.apiConfig.buildImageUrl(fileName);
       }
     }
     return 'https://cdn-icons-png.flaticon.com/512/11696/11696730.png';
@@ -437,25 +437,16 @@ export class VehicleListComponent implements OnInit {
     return features.length > 0 ? features.join(', ') : 'Nenhum opcional';
   }
 
-  openImageGallery(vehicle: VehicleResponse): void {
-    console.log('Abrir galeria de imagens para:', vehicle);
+  openImageGallery(vehicle: VehicleResponse): void {    
   }
 
   openImageViewer(vehicle: VehicleResponse): void {
     if (vehicle.imagens && vehicle.imagens.length > 0) {
       this.viewerImages = vehicle.imagens.map(img => {
-
         if (img.startsWith('http://') || img.startsWith('https://')) {
           return img;
         }
-
-
-        if (img.startsWith('/uploads/')) {
-          return `http://localhost:5000${img}`;
-        }
-
-
-        return `http://localhost:5000/uploads/${img}`;
+        return this.apiConfig.buildImageUrl(img);
       });
     } else {
       this.viewerImages = [this.getMainImageUrl(vehicle)];
@@ -627,8 +618,7 @@ export class VehicleListComponent implements OnInit {
 
   clearPlans(): void {
 
-
-    console.log('Limpar planos do veículo:', this.selectedVehicleForDrawer?.placa);
+    
     this.closeDrawer();
   }
 }

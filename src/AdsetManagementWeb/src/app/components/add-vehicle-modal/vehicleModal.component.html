@@ -51,16 +51,12 @@
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Cor *</mat-label>
-              <mat-select formControlName="cor">
-                <mat-option *ngFor="let color of colorOptions" [value]="color">
-                  {{ color }}
-                </mat-option>
-              </mat-select>
+              <input matInput formControlName="cor" placeholder="Ex: Preto, Branco, Prata">
               <mat-error *ngIf="hasFieldError('cor')">{{ getFieldError('cor') }}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>KM *</mat-label>
+              <mat-label>KM</mat-label>
               <input matInput type="number" formControlName="km" min="0">
               <mat-error *ngIf="hasFieldError('km')">{{ getFieldError('km') }}</mat-error>
             </mat-form-field>

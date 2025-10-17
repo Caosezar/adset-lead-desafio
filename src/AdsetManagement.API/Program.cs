@@ -48,7 +48,6 @@ builder.Services.AddScoped<IFileService>(provider =>
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Erro ao configurar FileService: {ex.Message}");
         var tempPath = Path.Combine(Path.GetTempPath(), "AdsetManagement", "uploads");
         if (!Directory.Exists(tempPath))
             Directory.CreateDirectory(tempPath);
@@ -76,12 +75,9 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-    Console.WriteLine("Aplica��o configurada com sucesso. Iniciando...");
     app.Run();
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"Erro na inicializa��o da aplica��o: {ex.Message}");
-    Console.WriteLine($"StackTrace: {ex.StackTrace}");
     throw;
 }

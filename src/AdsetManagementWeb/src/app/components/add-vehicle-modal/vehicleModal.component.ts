@@ -7,6 +7,8 @@ import { UpdateVehicleRequest } from '../../api/models/UpdateVehicleRequest';
 import { VehicleResponse } from '../../api/models/VehicleResponse';
 import { VehicleImageService } from '../../api/services/VehicleImageService';
 import { VehicleService } from '../../api/services/VehicleService';
+import { VehicleEventService } from '../../services/vehicle-event.service';
+import { ApiConfigService } from '../../services/api-config.service';
 
 @Component({
   selector: 'app-vehicle-modal',
@@ -24,8 +26,8 @@ export class VehicleModalComponent implements OnInit {
   isLoading = false;
   selectedImages: File[] = [];
   imagePreviewUrls: string[] = [];
-  existingImages: Array<{id: number, url: string}> = []; 
-  removedImageIds: number[] = []; 
+  existingImages: Array<{ id: number, url: string }> = [];
+  removedImageIds: number[] = [];
 
 
   brandOptions = [
@@ -55,7 +57,7 @@ export class VehicleModalComponent implements OnInit {
     { key: 'abs', label: 'ABS' }
   ];
 
-  
+
   iCarrosPlans = [
     { value: '', label: 'Nenhum' },
     { value: 'Bronze', label: 'Bronze' },
@@ -72,7 +74,9 @@ export class VehicleModalComponent implements OnInit {
     private fb: FormBuilder,
     private vehicleService: VehicleService,
     private vehicleImageService: VehicleImageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private vehicleEventService: VehicleEventService,
+    private apiConfig: ApiConfigService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -94,13 +98,13 @@ export class VehicleModalComponent implements OnInit {
       km: ['', [Validators.min(0)]],
       preco: ['', [Validators.required, Validators.min(0.01)]],
 
-      
+
       arCondicionado: [false],
       alarme: [false],
       airbag: [false],
       abs: [false],
 
-      
+
       pacoteICarros: [''],
       pacoteWebMotors: ['']
     });
@@ -121,7 +125,7 @@ export class VehicleModalComponent implements OnInit {
       pacoteWebMotors: this.vehicle.pacoteWebMotors || ''
     });
 
-    
+
     if (this.vehicle.otherOptions) {
       this.availableFeatures.forEach(feature => {
         const value = (this.vehicle!.otherOptions as any)?.[feature.key] || false;
@@ -137,17 +141,18 @@ export class VehicleModalComponent implements OnInit {
     }
 
     try {
-      
       const images = await this.vehicleImageService.getApiVehicleImages(this.vehicle.id).toPromise();
+
+      this.existingImages = (images || []).map(img => {
+        const imageUrl = img.imageUrl || '';
+        const fullUrl = this.apiConfig.buildImageUrl(imageUrl);
+        return {
+          id: img.id || 0,
+          url: fullUrl
+        };
+      });
       
-      this.existingImages = (images || []).map(img => ({
-        id: img.id || 0,
-        url: img.imageUrl || ''
-      }));
-      
-      console.log('[loadExistingImages] Loaded images with IDs:', this.existingImages);
     } catch (error) {
-      console.error('[loadExistingImages] Error loading images:', error);
       this.existingImages = [];
     }
   }
@@ -159,7 +164,7 @@ export class VehicleModalComponent implements OnInit {
     const MAX_IMAGES = 15;
     const currentTotalImages = this.existingImages.length + this.selectedImages.length;
     const availableSlots = MAX_IMAGES - this.existingImages.length;
-    
+
     if (files.length > availableSlots) {
       alert(`Você pode adicionar no máximo ${availableSlots} imagem(ns). Limite total: ${MAX_IMAGES} imagens por veículo.`);
       event.target.value = '';
@@ -167,6 +172,7 @@ export class VehicleModalComponent implements OnInit {
     }
 
     this.selectedImages = Array.from(files);
+    console.log('Imagens selecionadas:', this.selectedImages.length, this.selectedImages);
     this.imagePreviewUrls = [];
 
     for (let file of this.selectedImages) {
@@ -180,37 +186,30 @@ export class VehicleModalComponent implements OnInit {
 
   async removeImage(index: number, isExisting: boolean = false): Promise<void> {
     if (isExisting) {
-      
+
       const image = this.existingImages[index];
-      console.log(`[removeImage] Removing existing image at index ${index}:`, image);
-      
-      
+
+
       this.removedImageIds.push(image.id);
       this.existingImages.splice(index, 1);
-      
-      
+
+
       if (this.isEditMode && this.vehicle?.id) {
         await this.deleteImageFromServer(image.id);
       }
     } else {
-      
-      console.log(`[removeImage] Removing new image at index ${index}`);
       this.selectedImages.splice(index, 1);
       this.imagePreviewUrls.splice(index, 1);
     }
   }
 
-  
+
   private async deleteImageFromServer(imageId: number): Promise<void> {
     try {
       if (!this.vehicle?.id) return;
 
-      console.log(`[deleteImageFromServer] Deleting image ID ${imageId} from vehicle ${this.vehicle.id}`);
-      
-      
+
       await this.vehicleImageService.deleteApiVehicleImages(this.vehicle.id, imageId).toPromise();
-      
-      console.log(`[deleteImageFromServer] Image deleted successfully`);
     } catch (error) {
       console.error('[deleteImageFromServer] Error deleting image:', error);
       alert('Erro ao remover imagem. Por favor, tente novamente.');
@@ -229,14 +228,14 @@ export class VehicleModalComponent implements OnInit {
       const formValue = this.vehicleForm.value;
       let savedVehicle: VehicleResponse;
 
-      
+
       const otherOptions: OtherOptionsRequest = {};
       this.availableFeatures.forEach(feature => {
         (otherOptions as any)[feature.key] = formValue[feature.key] || false;
       });
 
       if (this.isEditMode && this.vehicle) {
-        
+        // Atualiza o veículo usando o endpoint normal
         const updateRequest: UpdateVehicleRequest = {
           placa: formValue.placa,
           marca: formValue.marca,
@@ -249,17 +248,19 @@ export class VehicleModalComponent implements OnInit {
           pacoteICarros: formValue.pacoteICarros || null,
           pacoteWebMotors: formValue.pacoteWebMotors || null
         };
-
-        console.log('Updating vehicle:', updateRequest);
         savedVehicle = await this.vehicleService.putApiVehicle(this.vehicle.id!, updateRequest).toPromise();
-
         
+        // Se houver novas imagens, faz upload separado (mesmo fluxo do Create)
         if (this.selectedImages.length > 0 && savedVehicle.id) {
-          console.log('Uploading images for vehicle:', savedVehicle.id);
+          console.log('Fazendo upload de', this.selectedImages.length, 'imagem(ns)...');
           await this.uploadImages(savedVehicle.id);
+          
+          // Recarrega o veículo com as novas imagens
+          const updatedVehicle = await this.vehicleService.getApiVehicle1(savedVehicle.id).toPromise();
+          savedVehicle = updatedVehicle;
         }
       } else {
-        
+
         const createRequest: CreateVehicleRequest = {
           placa: formValue.placa,
           marca: formValue.marca,
@@ -272,25 +273,22 @@ export class VehicleModalComponent implements OnInit {
           pacoteICarros: formValue.pacoteICarros || null,
           pacoteWebMotors: formValue.pacoteWebMotors || null
         };
-
-        console.log('Creating vehicle:', createRequest);
         savedVehicle = await this.vehicleService.postApiVehicle(createRequest).toPromise();
-        
-        
+
+
         if (this.selectedImages.length > 0 && savedVehicle.id) {
-          console.log(`Uploading ${this.selectedImages.length} images for vehicle ${savedVehicle.id}`);
           await this.uploadImages(savedVehicle.id);
-          
-          
+
+
           const updatedVehicle = await this.vehicleService.getApiVehicle1(savedVehicle.id).toPromise();
           savedVehicle = updatedVehicle;
         }
       }
-
-      console.log('Vehicle saved successfully:', savedVehicle);
       this.save.emit(savedVehicle);
-      
-      
+
+      // Notifica que o veículo foi atualizado/criado
+      this.vehicleEventService.notifyVehicleUpdated();
+
       this.refreshList.emit();
 
     } catch (error: any) {
@@ -305,29 +303,39 @@ export class VehicleModalComponent implements OnInit {
 
   private async uploadImages(vehicleId: number): Promise<void> {
     try {
-      console.log(`[uploadImages] Starting upload for vehicle ${vehicleId}`);
-      console.log(`[uploadImages] Number of selected images: ${this.selectedImages.length}`);
+      console.log('[uploadImages] Iniciando upload de imagens para veículo:', vehicleId);
+      console.log('[uploadImages] selectedImages.length:', this.selectedImages.length);
       
-      
-      this.selectedImages.forEach((img, index) => {
-        console.log(`[uploadImages] Image ${index}: ${img.name}, Size: ${img.size}, Type: ${img.type}`);
-      });
-      
-      
+      if (this.selectedImages.length === 0) {
+        console.warn('[uploadImages] Nenhuma imagem selecionada!');
+        return;
+      }
+
       const formData = new FormData();
-      this.selectedImages.forEach((image) => {
+      this.selectedImages.forEach((image, index) => {
+        console.log(`[uploadImages] Adicionando imagem ${index + 1}:`, {
+          name: image.name,
+          size: image.size,
+          type: image.type
+        });
         formData.append('Images', image, image.name);
       });
 
-      console.log('[uploadImages] FormData created with', this.selectedImages.length, 'images');
+      // Verificar conteúdo do FormData
+      console.log('[uploadImages] Conteúdo do FormData:');
+      formData.forEach((value, key) => {
+        if (value instanceof File) {
+          console.log(`  ${key}: [File] ${value.name} (${value.size} bytes)`);
+        } else {
+          console.log(`  ${key}: ${value}`);
+        }
+      });
+
+      const uploadUrl = this.apiConfig.buildUrl(`/api/vehicle/${vehicleId}/images`);
+      console.log('[uploadImages] Fazendo POST para:', uploadUrl);
+      const result = await this.http.post<any>(uploadUrl, formData).toPromise();
       
-      
-      const result = await this.http.post<any>(
-        `http://localhost:5000/api/vehicle/${vehicleId}/images`,
-        formData
-      ).toPromise();
-      
-      console.log('[uploadImages] Upload response:', result);
+      console.log('[uploadImages] Upload concluído com sucesso:', result);
     } catch (error) {
       console.error('[uploadImages] Error uploading images:', error);
       throw error;

@@ -25,7 +25,4 @@ export class VehicleStatsComponent {
   onRegisterVehicle(): void {
     this.registerVehicle.emit();
   }
-  onSaveStats(): void {
-    console.log('Salvar estatísticas clicado');
-  }
 }
