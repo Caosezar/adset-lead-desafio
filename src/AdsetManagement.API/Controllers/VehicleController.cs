@@ -18,24 +18,14 @@ public class VehicleController : ControllerBase
 
     [HttpPost]
     public async Task<ActionResult<VehicleResponse>> CreateVehicle([FromBody] CreateVehicleRequest request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
+    {        
         var response = await _vehicleService.CreateVehicleAsync(request);
         return CreatedAtAction(nameof(GetVehicleById), new { id = response.Id }, response);
     }
 
     [HttpPost("with-images")]
     public async Task<ActionResult<VehicleResponse>> CreateVehicleWithImages([FromForm] CreateVehicleWithImagesRequest request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
+    {        
         try
         {
             var response = await _vehicleService.CreateVehicleWithImagesAsync(request);
@@ -78,12 +68,7 @@ public class VehicleController : ControllerBase
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<VehicleResponse>> UpdateVehicle(int id, [FromBody] UpdateVehicleRequest request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
+    {        
         var response = await _vehicleService.UpdateVehicleAsync(id, request);
         if (response == null)
             return NotFound($"Veículo com ID {id} não encontrado");
@@ -103,12 +88,7 @@ public class VehicleController : ControllerBase
 
     [HttpPut("{id:int}/pacotes")]
     public async Task<ActionResult<VehicleResponse>> UpdateVehiclePacotes(int id, [FromBody] UpdatePacotesRequest request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
+    {        
         var response = await _vehicleService.UpdateVehiclePacotesAsync(id, request);
         if (response == null)
             return NotFound($"Veículo com ID {id} não encontrado");

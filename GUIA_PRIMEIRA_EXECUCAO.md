@@ -10,8 +10,7 @@
 Durante o desenvolvimento, encontrei limitações com o arquivo Adobe Illustrator:
 - Alguns ícones **não existiam** ou **não puderam ser exportados**
 - Substituí por ícones equivalentes do Angular Material
-- A estrutura visual foi mantida fiel ao layout original na medida do possível, achei um tanto confuso.
-
+- A estrutura visual foi mantida fiel ao layout original na medida do possível.
 ### 🤔 Sobre Funcionalidades Não Especificadas
 Funcionalidades não detalhadas foram implementadas usando:
 - **Bom senso** e **melhores práticas**
@@ -175,10 +174,25 @@ GET http://localhost:5000/api/vehicle?marca=Toyota&anoMin=2020&page=1&pageSize=1
 **Frontend:** Angular 16+, TypeScript, Angular Material, RxJS
 
 ---
-
-## 🏗️ Arquitetura e Padrões Utilizados
-
 ### 📋 OpenAPI Specification
+
+Optei por utilizar a especificação OpenAPI (Swagger) como parte do fluxo de desenvolvimento para estudo e para garantir sincronização forte entre backend e frontend. O fluxo utilizado é: gerar o JSON do Swagger a partir da API em execução, (opcionalmente) converter para YAML e manter esse arquivo versionado em `src/AdesetManagement.Spec/openApi.yaml`. A partir dessa especificação geramos automaticamente os services e tipos TypeScript consumidos pelo frontend Angular.
+
+Vantagens:
+- ✅ Tipagem TypeScript fortemente tipada
+- ✅ Menos divergência entre contrato (API) e implementação (cliente)
+- ✅ Geração automática reduz erros manuais e acelera o desenvolvimento
+
+Fluxo prático (resumido):
+1. Rode a API localmente e exporte o JSON do Swagger (ex.: `http://localhost:5000/swagger/v1/swagger.json`).
+2. (Opcional) Converta o JSON para YAML e salve em `src/AdesetManagement.Spec/openApi.yaml`.
+3. Gere os serviços/types no frontend (ex.: `npx ng-openapi-gen --input ./src/AdesetManagement.Spec/openApi.yaml --output ./src/app/api`).
+
+Recomendações:
+- Defina `operationId` para gerar nomes de método previsíveis no cliente;
+- Use `components/schemas` para modelos reutilizáveis;
+- Declare esquemas de segurança se necessário (ex.: Bearer);
+- Versione a especificação e regenere o cliente sempre que houver mudanças na API; considere automatizar esse passo no CI.
 
 O projeto utiliza **OpenAPI 3.0** para definição e documentação da API:
 
@@ -231,7 +245,7 @@ createVehicle(data: CreateVehicleRequest) {
 }
 ```
 
----
+## 🏗️ Arquitetura e Padrões Utilizados
 
 ### 🎯 Input e Output Properties
 
