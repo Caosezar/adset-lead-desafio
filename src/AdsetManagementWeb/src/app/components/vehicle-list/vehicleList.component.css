@@ -1064,8 +1064,7 @@ select.custom-input option {
   justify-content: center;
   width: fit-content;
   height: fit-content;
-  margin: 2px;
-  padding: 2px;
+  margin: 2px 5px 0 10px;
 }
 
 .vehicle-footer {
@@ -1130,8 +1129,8 @@ select.custom-input option {
 
 .action-buttons-footer { 
   display: flex; 
-  gap: 8px; 
-  align-items: flex-start;
+  gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
 }
 
@@ -1184,6 +1183,8 @@ select.custom-input option {
   display: flex;
   align-items: center;
   flex-direction: column ;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .options-btn:hover {
