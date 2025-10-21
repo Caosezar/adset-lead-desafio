@@ -144,7 +144,7 @@
 
 .plan-name {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: lighter;
   color: #333;
 }
 
@@ -185,16 +185,18 @@
   background: #c1c1c1;
   min-height: 64px;
   padding: 0 16px;
+  height: fit-content;
 }
 
 .logo-container { 
+  height: fit-content;
   display: flex; 
   align-items: center; 
   padding: 8px 0;
 }
 
 .logo-image { 
-  height: 45px; 
+  height: 75px; 
   width: auto; 
   max-width: 180px;
   filter: brightness(1.1) contrast(1.1);
@@ -229,8 +231,6 @@ mat-drawer-content {
   width: 98%;
   flex-direction: row;
   border-radius: 0 0 28px 28px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  flex-shrink: 0;
   border: 1px solid var(--adset-light-gray);
   margin-left: auto;
   margin-right: auto;
@@ -251,7 +251,7 @@ mat-drawer-content {
 .filter-row {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px;
+  gap: 4px;
   margin: 4px;
   overflow: auto;
 }
@@ -1057,6 +1057,16 @@ select.custom-input option {
 .vehicle-features mat-chip.more-features {
   background-color: #e3f2fd; color: var(--adset-orange); font-weight: 500;
 }
+.photo-indicator{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: fit-content;
+  height: fit-content;
+  margin: 2px;
+  padding: 2px;
+}
 
 .vehicle-footer {
   display: flex; 
@@ -1072,11 +1082,14 @@ select.custom-input option {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  width: 190px;
+  margin-right: -16px;
   gap: 8px;
-  align-items: flex-end;
-  padding: 12px 16px;
+  align-items: center;
+  padding: 12px 0 0 0;
   height: 100%;
-  padding-bottom: 0px;
+  transform: translateY(11px);
+  will-change: transform;
 }
 
 .price-section {
@@ -1096,13 +1109,17 @@ select.custom-input option {
 }
 
 .vehicle-price { 
-  font-size: clamp(12px, 1.3vw, 14px); 
+  font-size: clamp(12px, 1.3vw, 14px);
+  height: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   font-weight: 600; 
   color: var(--adset-green); 
   padding: 2px;
   white-space: nowrap;
-  background-color: white;
+  background-color: var(--adset-lighter-gray);
   clip-path: polygon(
     15px 0,
     100% 0,
